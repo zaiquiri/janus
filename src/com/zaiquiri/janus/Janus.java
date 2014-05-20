@@ -20,7 +20,6 @@ public class Janus extends Runner {
 	private final Class<?> clazz;
 	private final List<Method> tests;
 	private final Object interfaceTest;
-	private final Collection<Class<?>> implementors;
 	private final Field interfaceUnderTest;
 
 	public Janus(final Class<?> clazz) throws InstantiationException, IllegalAccessException{
@@ -28,25 +27,27 @@ public class Janus extends Runner {
 		tests = getTestMethods();
 		interfaceTest = clazz.newInstance();
 		interfaceUnderTest = findInterfaceUnderTest();
-        ClassFinder classFinder = getClassFinderForClass(clazz);
-        implementors = classFinder.findImplementationsOf(interfaceUnderTest.getType());
 	}
+
+    private Collection<Class<?>> getImplementors() {
+        ClassFinder classFinder = getClassFinderForClass(clazz);
+        return classFinder.findImplementationsOf(interfaceUnderTest.getType());
+    }
 
     @Override
 	public void run(final RunNotifier notifier) {
-        runForAllImplementations(notifier);
+        runForAllImplementors(notifier);
     }
 
-    private void runForAllImplementations(final RunNotifier notifier) {
-        for (final Class<?> implementation : implementors){
-            runForImplementation(notifier, implementation);
+    private void runForAllImplementors(final RunNotifier notifier) {
+        for (final Class<?> implementor : getImplementors()){
+            runForImplementor(notifier, implementor);
         }
     }
 
-    private void runForImplementation(final RunNotifier notifier, final Class<?> implementation) {
-        runForConstructors(notifier, implementation);
-        runForFactories(notifier, implementation);
-
+    private void runForImplementor(final RunNotifier notifier, final Class<?> implementor) {
+        runForConstructors(notifier, implementor);
+        runForFactories(notifier, implementor);
     }
 
     private void runForFactories(RunNotifier notifier, Class<?> implementation) {
@@ -55,11 +56,11 @@ public class Janus extends Runner {
 
     private void runForConstructors(RunNotifier notifier, Class<?> implementation) {
         for (final Constructor constructor : implementation.getConstructors()) {
-            runForAllInstancesOfConstructor(notifier, constructor, implementation);
+            runForAllInstancesOfConstructor(notifier, constructor);
         }
     }
 
-    private void runForAllInstancesOfConstructor(RunNotifier notifier, Constructor constructor, Class<?> implementation) {
+    private void runForAllInstancesOfConstructor(RunNotifier notifier, Constructor constructor) {
         for (final Object instance : createAllInstancesFromConstructor(constructor)){
             runAllTests(notifier, instance);
         }
@@ -68,8 +69,6 @@ public class Janus extends Runner {
     private Iterable<? extends Object> createAllInstancesFromConstructor(Constructor constructor) {
         List instances = new ArrayList();
         try {
-            final int nbrOfArguments = constructor.getTypeParameters().length;
-            Object arguments = Object[];
             instances.add(constructor.newInstance());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
@@ -84,14 +83,14 @@ public class Janus extends Runner {
     }
 
     private void runAllTests(final RunNotifier notifier, final Object instance) {
-        injectInstance(instance);
         for (final Method test : tests){
-          runTest(notifier, instance.getClass(), test);
+          runTest(notifier, instance, test);
         }
     }
 
-    private void runTest(final RunNotifier notifier, final Class<?> implementation, final Method test) {
-        Description testDescription = Description.createTestDescription(implementation, test.getName());
+    private void runTest(final RunNotifier notifier, final Object instance, final Method test) {
+        final Description testDescription = Description.createTestDescription(instance.getClass(), test.getName());
+        injectInstance(instance);
         evaluateTest(notifier, test, testDescription);
     }
 
