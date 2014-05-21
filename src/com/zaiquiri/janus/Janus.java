@@ -22,14 +22,14 @@ public class Janus extends Runner {
     @Override
     public void run(final RunNotifier notifier) {
         final List<Method> testMethods = annotationReader.getTestMethods();
-        final String basePackage = annotationReader.getBasePackageUnderTest();
         final Field interfaceUnderTest = annotationReader.getInterfaceUnderTest();
+        final String basePackage = annotationReader.getBasePackageUnderTest();
 
-        final TestFactory testFactory = new ImplementationInjectingTestFactory(testClass, testMethods, interfaceUnderTest, notifier);
-
+        final TestClassData testClassData = new TestClassData(testClass, testMethods, interfaceUnderTest);
+        final TestFactory testFactory = new JanusTestFactory(testClassData, notifier);
         final JanusTestEngine janusTestEngine = new JanusTestEngine(basePackage, testFactory);
 
-        janusTestEngine.testAllImplementationsOf(interfaceUnderTest);
+        janusTestEngine.testAllPossibleImplementationsOf(interfaceUnderTest);
     }
 
     @Override

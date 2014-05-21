@@ -6,17 +6,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-public class ImplementationInjectingTestFactory implements TestFactory {
+public class JanusTestFactory implements TestFactory {
     private final Field interfaceUnderTest;
     private final Object testClassInstance;
     private final RunNotifier notifier;
     private final Collection<Method> testMethods;
 
-    public ImplementationInjectingTestFactory(final Object testClass, final Collection<Method> testMethods, final Field fieldToInject, final RunNotifier notifier) {
-        this.interfaceUnderTest = fieldToInject;
-        this.testClassInstance = testClass;
+    public JanusTestFactory(final TestClassData testClassData, final RunNotifier notifier) {
+        this.testClassInstance = testClassData.testClass();
+        this.testMethods = testClassData.testMethods();
+        this.interfaceUnderTest = testClassData.interfaceUnderTest();
         this.notifier = notifier;
-        this.testMethods = testMethods;
     }
 
     @Override
@@ -30,6 +30,6 @@ public class ImplementationInjectingTestFactory implements TestFactory {
         final TesterFromMethodFactory testFactory
                 = new MethodTesterFromMethodFactory(testClassInstance, testNotifierFactory);
 
-        return new FieldInjectingTestSuite(testMethods, testFactory, injector);
+        return new InjectingTester(testMethods, testFactory, injector);
     }
 }

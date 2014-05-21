@@ -13,7 +13,7 @@ public class JanusTestEngine {
         this.testFactory = testFactory;
     }
 
-    void testAllImplementationsOf(Field interfaceUnderTest) {
+    void testAllPossibleImplementationsOf(Field interfaceUnderTest) {
         for (final Class<?> implementor : getAllClassesThatImplement(interfaceUnderTest)) {
             new ConstructorSuite().runSuiteForEveryConstructor(implementor, testFactory);
             new FactorySuite().runSuiteForEveryFactory(implementor, testFactory);

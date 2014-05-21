@@ -3,12 +3,12 @@ package com.zaiquiri.janus;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-public class FieldInjectingTestSuite implements Tester {
+public class InjectingTester implements Tester {
     private final Collection<Method> tests;
     private final TesterFromMethodFactory testerFactory;
     private final Injector injector;
 
-    public FieldInjectingTestSuite(final Collection<Method> tests, final TesterFromMethodFactory testerFactory, final Injector injector) {
+    public InjectingTester(final Collection<Method> tests, final TesterFromMethodFactory testerFactory, final Injector injector) {
         this.tests = tests;
         this.testerFactory = testerFactory;
         this.injector = injector;
