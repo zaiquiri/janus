@@ -46,14 +46,14 @@ public final class AnnotationReader {
         throw new RuntimeException("No field designated as @" + UnderTest.class.getName());
     }
 
-    public List<Method> getTestMethods() {
-        final ArrayList<Method> methods = new ArrayList<Method>();
+    public List<TestCase> getTestCases() {
+        final ArrayList<TestCase> testCases = new ArrayList<TestCase>();
         for (final Method method : clazz.getDeclaredMethods()) {
             if (isATestMethod(method)) {
-                methods.add(method);
+                testCases.add(new TestCase(method));
             }
         }
-        return methods;
+        return testCases;
     }
 
     private boolean isUnderTest(Field field) {

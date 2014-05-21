@@ -6,12 +6,12 @@ import java.util.List;
 
 public class TestClassData {
     private final Object testClass;
-    private final List<Method> testMethods;
+    private final List<TestCase> testCases;
     private final Field interfaceUnderTest;
 
-    public TestClassData(final Object testClass, final List<Method> testMethods, final Field interfaceUnderTest) {
+    public TestClassData(final Object testClass, final List<TestCase> testCases, final Field interfaceUnderTest) {
         this.testClass = testClass;
-        this.testMethods = testMethods;
+        this.testCases = testCases;
         this.interfaceUnderTest = interfaceUnderTest;
     }
 
@@ -19,8 +19,8 @@ public class TestClassData {
         return testClass;
     }
 
-    public List<Method> testMethods() {
-        return testMethods;
+    public List<TestCase> testMethods() {
+        return testCases;
     }
 
     public Field interfaceUnderTest() {

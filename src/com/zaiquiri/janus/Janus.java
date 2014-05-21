@@ -5,7 +5,6 @@ import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
 
 public class Janus extends Runner {
@@ -21,19 +20,19 @@ public class Janus extends Runner {
 
     @Override
     public void run(final RunNotifier notifier) {
-        final List<Method> testMethods = annotationReader.getTestMethods();
+        final List<TestCase> testCases = annotationReader.getTestCases();
         final Field interfaceUnderTest = annotationReader.getInterfaceUnderTest();
         final String basePackage = annotationReader.getBasePackageUnderTest();
 
-        final TestClassData testClassData = new TestClassData(testClass, testMethods, interfaceUnderTest);
-        final TesterFactory testerFactory = new InjectingTesterFactory(testClassData, notifier);
+        final TestClassData testClassData = new TestClassData(testClass, testCases, interfaceUnderTest);
+        final InstanceTestRunnerFactory instanceTestRunnerFactory = new InjectingInstanceTestRunnerFactory(testClassData, notifier);
         final InstanceMaker instanceMaker = new InstanceMaker(new ConstructorStrategy(), new FactoryStrategy());
 
-        final TestSuiteForInstacesFactory testSuiteForInstacesFactory = new TestSuiteForInstacesFactory(testerFactory);
+        final TestSuiteForInstacesFactory testSuiteForInstacesFactory = new TestSuiteForInstacesFactory(instanceTestRunnerFactory);
         final ClassFinder classFinder = new ClassFinder(basePackage);
 
-        final JanusTestEngine janusTestEngine = new JanusTestEngine(classFinder, instanceMaker, testSuiteForInstacesFactory);
-        janusTestEngine.testAllPossibleImplementationsOf(interfaceUnderTest);
+        final ClassTestRunner classTestRunner = new ClassTestRunner(classFinder, instanceMaker, testSuiteForInstacesFactory);
+        classTestRunner.testAllPossibleImplementationsOf(interfaceUnderTest);
     }
 
     @Override

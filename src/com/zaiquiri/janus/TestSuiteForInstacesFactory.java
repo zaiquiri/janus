@@ -2,14 +2,14 @@ package com.zaiquiri.janus;
 
 public class TestSuiteForInstacesFactory {
 
-    private final TesterFactory testerFactory;
+    private final InstanceTestRunnerFactory instanceTestRunnerFactory;
 
-    public TestSuiteForInstacesFactory(final TesterFactory testerFactory) {
-        this.testerFactory = testerFactory;
+    public TestSuiteForInstacesFactory(final InstanceTestRunnerFactory instanceTestRunnerFactory) {
+        this.instanceTestRunnerFactory = instanceTestRunnerFactory;
     }
 
-    public TestSuiteForInstaces createSuiteFor(final Iterable<Object> intsances){
-        return new TestSuiteForInstaces(intsances, testerFactory);
+    public TestBatchRunner createSuiteFor(final Iterable<Object> instances){
+        return new TestBatchRunner(instances, instanceTestRunnerFactory);
     }
 
 

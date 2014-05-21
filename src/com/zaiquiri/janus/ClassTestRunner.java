@@ -3,13 +3,13 @@ package com.zaiquiri.janus;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
-public class JanusTestEngine {
+public class ClassTestRunner {
 
     private final ClassFinder classFinder;
     private final TestSuiteForInstacesFactory testFactory;
     private final InstanceMaker instanceMaker;
 
-    public JanusTestEngine(ClassFinder classFinder, InstanceMaker instanceMaker, TestSuiteForInstacesFactory testSuiteFactory) {
+    public ClassTestRunner(ClassFinder classFinder, InstanceMaker instanceMaker, TestSuiteForInstacesFactory testSuiteFactory) {
         this.classFinder = classFinder;
         this.testFactory = testSuiteFactory;
         this.instanceMaker = instanceMaker;
@@ -18,7 +18,7 @@ public class JanusTestEngine {
     public void testAllPossibleImplementationsOf(Field interfaceUnderTest) {
         for (final Class<?> implementor : getAllClassesThatImplement(interfaceUnderTest)) {
             Iterable<Object> instances = instanceMaker.getInstancesOf(implementor);
-            testFactory.createSuiteFor(instances).test();
+            testFactory.createSuiteFor(instances).run();
         }
     }
 

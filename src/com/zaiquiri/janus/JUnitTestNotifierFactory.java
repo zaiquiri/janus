@@ -3,8 +3,6 @@ package com.zaiquiri.janus;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 
-import java.lang.reflect.Method;
-
 public class JUnitTestNotifierFactory implements TestNotifierFactory {
 
     private final Object instance;
@@ -16,7 +14,7 @@ public class JUnitTestNotifierFactory implements TestNotifierFactory {
     }
 
     @Override
-    public TestNotifier createNotifier(final Method test) {
+    public TestNotifier createNotifier(final TestCase test) {
         final Description testDescription = Description.createTestDescription(instance.getClass(), test.getName());
         return new JunitTestNotifier(notifier, testDescription);
     }

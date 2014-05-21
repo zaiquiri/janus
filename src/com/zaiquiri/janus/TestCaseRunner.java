@@ -1,31 +1,28 @@
 package com.zaiquiri.janus;
 
-import org.junit.Test;
-
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
-public class SingleTestRunner implements Tester {
+public class TestCaseRunner implements Runnable {
     private final TestNotifier testNotifier;
-    private final Method testMethod;
+    private final TestCase testCase;
     private final Object testClassInstance;
 
-    public SingleTestRunner(final Method testMethod, final Object testClassInstance, final TestNotifier testNotifier) {
+    public TestCaseRunner(final TestCase testCase, final Object testClassInstance, final TestNotifier testNotifier) {
         this.testNotifier = testNotifier;
-        this.testMethod = testMethod;
+        this.testCase = testCase;
         this.testClassInstance = testClassInstance;
     }
 
     @Override
-    public void test() {
+    public void run() {
         testStarted();
-        final Class<? extends Throwable> expectedException = testMethod.getAnnotation(Test.class).expected();
+        final Class<? extends Throwable> expectedException = testCase.expectedException();
         try {
             runTest();
-            if (isNotExpected(expectedException)) {
-                testSucceeded();
+            if (testCase.shouldThrowException()) {
+                testFailed(new Exception("Expected exception " + testCase.expectedException().getName() + " not thrown"));
             } else {
-                throw new Exception();
+                testSucceeded();
             }
         } catch (final InvocationTargetException e) {
             if (theExpectedHappened(expectedException, e)) {
@@ -56,13 +53,8 @@ public class SingleTestRunner implements Tester {
         testNotifier.testSucceeded();
     }
 
-    private Object runTest() throws IllegalAccessException,
+    private void runTest() throws IllegalAccessException,
             InvocationTargetException {
-        return testMethod.invoke(testClassInstance, (Object[]) null);
+        testCase.invoke(testClassInstance);
     }
-
-    private boolean isNotExpected(final Class<? extends Throwable> expected) {
-        return expected == org.junit.Test.None.class;
-    }
-
 }
