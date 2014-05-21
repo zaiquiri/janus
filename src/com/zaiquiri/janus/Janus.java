@@ -27,8 +27,6 @@ public class Janus extends Runner {
 
         final TestFactory testFactory = new ImplementationInjectingTestFactory(testClass, testMethods, interfaceUnderTest, notifier);
 
-
-
         final JanusTestEngine janusTestEngine = new JanusTestEngine(basePackage, testFactory);
 
         janusTestEngine.testAllImplementationsOf(interfaceUnderTest);
