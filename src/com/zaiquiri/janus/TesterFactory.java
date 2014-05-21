@@ -1,6 +1,6 @@
 package com.zaiquiri.janus;
 
-public interface TestFactory {
+public interface TesterFactory {
 
     Tester createTester(Object instance);
 }

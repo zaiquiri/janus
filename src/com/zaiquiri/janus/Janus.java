@@ -26,9 +26,13 @@ public class Janus extends Runner {
         final String basePackage = annotationReader.getBasePackageUnderTest();
 
         final TestClassData testClassData = new TestClassData(testClass, testMethods, interfaceUnderTest);
-        final TestFactory testFactory = new JanusTestFactory(testClassData, notifier);
-        final JanusTestEngine janusTestEngine = new JanusTestEngine(basePackage, testFactory);
+        final TesterFactory testerFactory = new InjectingTesterFactory(testClassData, notifier);
+        final InstanceMaker instanceMaker = new InstanceMaker(new ConstructorStrategy(), new FactoryStrategy());
 
+        final TestSuiteForInstacesFactory testSuiteForInstacesFactory = new TestSuiteForInstacesFactory(testerFactory);
+        final ClassFinder classFinder = new ClassFinder(basePackage);
+
+        final JanusTestEngine janusTestEngine = new JanusTestEngine(classFinder, instanceMaker, testSuiteForInstacesFactory);
         janusTestEngine.testAllPossibleImplementationsOf(interfaceUnderTest);
     }
 

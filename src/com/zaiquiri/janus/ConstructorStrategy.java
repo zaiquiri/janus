@@ -3,17 +3,21 @@ package com.zaiquiri.janus;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-public class ConstructorSuite {
-    public void runSuiteForEveryConstructor(Class<?> implementor, TestFactory testFactory) {
+public class ConstructorStrategy implements InstanceMakerStrategy {
+
+    @Override
+    public Collection<Object> createInstancesOf(final Class<?> implementor) {
+        final List<Object> instances = new ArrayList<Object>();
         for (final Constructor constructor : implementor.getConstructors()) {
-            Tester testSuite = new TestSuiteForInstaces(allInstancesFrom(constructor), testFactory);
-            testSuite.runAllTests();
+            instances.addAll(allInstancesFrom(constructor));
         }
+        return instances;
     }
 
-    private Iterable<Object> allInstancesFrom(Constructor constructor) {
+    private List<Object> allInstancesFrom(Constructor constructor) {
         List<Object> instances = new ArrayList<Object>();
         try {
             final Class[] parameterTypes = constructor.getParameterTypes();

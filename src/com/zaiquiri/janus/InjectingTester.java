@@ -5,17 +5,17 @@ import java.util.Collection;
 
 public class InjectingTester implements Tester {
     private final Collection<Method> tests;
-    private final TesterFromMethodFactory testerFactory;
+    private final TestRunnerFactory testerFactory;
     private final Injector injector;
 
-    public InjectingTester(final Collection<Method> tests, final TesterFromMethodFactory testerFactory, final Injector injector) {
+    public InjectingTester(final Collection<Method> tests, final TestRunnerFactory testerFactory, final Injector injector) {
         this.tests = tests;
         this.testerFactory = testerFactory;
         this.injector = injector;
     }
 
     @Override
-    public final void runAllTests() {
+    public final void test() {
         for (final Method test : tests) {
             injectInstance();
             //before
@@ -25,7 +25,7 @@ public class InjectingTester implements Tester {
     }
 
     private void runTest(final Method test) {
-        testerFactory.createTester(test).runAllTests();
+        testerFactory.createTester(test).test();
     }
 
     private void injectInstance() {

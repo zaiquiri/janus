@@ -5,23 +5,24 @@ import java.util.Collection;
 
 public class JanusTestEngine {
 
-    private final String basePackage;
-    private final TestFactory testFactory;
+    private final ClassFinder classFinder;
+    private final TestSuiteForInstacesFactory testFactory;
+    private final InstanceMaker instanceMaker;
 
-    public JanusTestEngine(String basePackage, TestFactory testFactory) {
-        this.basePackage = basePackage;
-        this.testFactory = testFactory;
+    public JanusTestEngine(ClassFinder classFinder, InstanceMaker instanceMaker, TestSuiteForInstacesFactory testSuiteFactory) {
+        this.classFinder = classFinder;
+        this.testFactory = testSuiteFactory;
+        this.instanceMaker = instanceMaker;
     }
 
-    void testAllPossibleImplementationsOf(Field interfaceUnderTest) {
+    public void testAllPossibleImplementationsOf(Field interfaceUnderTest) {
         for (final Class<?> implementor : getAllClassesThatImplement(interfaceUnderTest)) {
-            new ConstructorSuite().runSuiteForEveryConstructor(implementor, testFactory);
-            new FactorySuite().runSuiteForEveryFactory(implementor, testFactory);
+            Iterable<Object> instances = instanceMaker.getInstancesOf(implementor);
+            testFactory.createSuiteFor(instances).test();
         }
     }
 
     private Collection<Class<?>> getAllClassesThatImplement(final Field ourInterface) {
-        ClassFinder classFinder = new ClassFinder(basePackage);
         return classFinder.findImplementationsOf(ourInterface.getType());
     }
 }

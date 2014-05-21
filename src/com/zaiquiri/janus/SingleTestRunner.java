@@ -5,19 +5,19 @@ import org.junit.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class MethodTester implements Tester {
+public class SingleTestRunner implements Tester {
     private final TestNotifier testNotifier;
     private final Method testMethod;
     private final Object testClassInstance;
 
-    public MethodTester(final TestNotifier testNotifier, final Method testMethod, final Object testClassInstance) {
+    public SingleTestRunner(final Method testMethod, final Object testClassInstance, final TestNotifier testNotifier) {
         this.testNotifier = testNotifier;
         this.testMethod = testMethod;
         this.testClassInstance = testClassInstance;
     }
 
     @Override
-    public void runAllTests() {
+    public void test() {
         testStarted();
         final Class<? extends Throwable> expectedException = testMethod.getAnnotation(Test.class).expected();
         try {

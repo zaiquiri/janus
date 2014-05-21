@@ -6,13 +6,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-public class JanusTestFactory implements TestFactory {
+public class InjectingTesterFactory implements TesterFactory {
     private final Field interfaceUnderTest;
     private final Object testClassInstance;
     private final RunNotifier notifier;
     private final Collection<Method> testMethods;
 
-    public JanusTestFactory(final TestClassData testClassData, final RunNotifier notifier) {
+    public InjectingTesterFactory(final TestClassData testClassData, final RunNotifier notifier) {
         this.testClassInstance = testClassData.testClass();
         this.testMethods = testClassData.testMethods();
         this.interfaceUnderTest = testClassData.interfaceUnderTest();
@@ -27,9 +27,9 @@ public class JanusTestFactory implements TestFactory {
         final TestNotifierFactory testNotifierFactory
                 = new JUnitTestNotifierFactory(implementationOfInterface, notifier);
 
-        final TesterFromMethodFactory testFactory
-                = new MethodTesterFromMethodFactory(testClassInstance, testNotifierFactory);
+        final TestRunnerFactory testRunnerFactory
+                = new SingleTestRunnerFactory(testClassInstance, testNotifierFactory);
 
-        return new InjectingTester(testMethods, testFactory, injector);
+        return new InjectingTester(testMethods, testRunnerFactory, injector);
     }
 }
