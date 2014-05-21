@@ -17,7 +17,7 @@ public final class AnnotationReader {
         this.clazz = clazz;
     }
 
-    public String getBasePackageUnderTest(final Class<?> clazz) {
+    public String getBasePackageUnderTest() {
         for (final Annotation annotation : clazz.getAnnotations()) {
             if (annotation.annotationType().equals(JanusOptions.class)) {
                 final JanusOptions options = (JanusOptions) annotation;
@@ -27,7 +27,7 @@ public final class AnnotationReader {
         throw new RuntimeException("Base package not defined in @" + JanusOptions.class.getName() + " annotation");
     }
 
-    public Field getInterfaceUnderTest() throws IllegalArgumentException, IllegalAccessException {
+    public Field getInterfaceUnderTest() {
         final Field[] fields = clazz.getDeclaredFields();
         Field fieldUnderTest = null;
         int numberOfFieldsUnderTest = 0;

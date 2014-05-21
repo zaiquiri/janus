@@ -1,20 +1,20 @@
 package com.zaiquiri.janus;
 
-public class InstanceSuiteTester implements Tester {
-    private final TesterFromInstanceFactory testerFactory;
+public class TestSuiteForInstaces implements Tester {
+    private final TestFactory testerFactory;
     private final Iterable<Object> instances;
 
-    public InstanceSuiteTester(final TesterFromInstanceFactory testerFactory, final Iterable<Object> instances) {
+    public TestSuiteForInstaces(final Iterable<Object> instances, final TestFactory testerFactory) {
         this.testerFactory = testerFactory;
         this.instances = instances;
     }
 
     @Override
-    public void test() {
+    public void runAllTests() {
         for (final Object instance : instances) {
             final Tester tester = testerFactory.createTester(instance);
             //beforeall
-            tester.test();
+            tester.runAllTests();
             //afterall
         }
     }

@@ -9,11 +9,11 @@ public class FieldInjector implements Injector {
     private final Object testClassInstance;
     private final Object instance;
 
-    public FieldInjector(Field interfaceUnderTest, Object testClassInstance, Object instance) {
+    public FieldInjector(Field field, Object instanceWithField, Object valueForField) {
 
-        this.interfaceUnderTest = interfaceUnderTest;
-        this.testClassInstance = testClassInstance;
-        this.instance = instance;
+        this.interfaceUnderTest = field;
+        this.testClassInstance = instanceWithField;
+        this.instance = valueForField;
     }
 
     @Override

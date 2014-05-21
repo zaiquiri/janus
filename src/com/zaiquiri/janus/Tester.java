@@ -1,5 +1,5 @@
 package com.zaiquiri.janus;
 
 public interface Tester {
-    void test();
+    void runAllTests();
 }
