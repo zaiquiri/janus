@@ -7,7 +7,7 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 @RunWith(Janus.class)
-@Janus.Options(
+@JanusOptions(
         basePackage="com.zaiquiri"
 )
 public class BubblableTest {

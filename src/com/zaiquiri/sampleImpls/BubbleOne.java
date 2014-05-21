@@ -3,14 +3,23 @@ package com.zaiquiri.sampleImpls;
 
 public class BubbleOne implements Bubblable {
 
-    public BubbleOne(String string){
+    public BubbleOne(String string) {
     }
 
-    public BubbleOne(){
+    public BubbleOne() {
+    }
+
+    public BubbleOne(int a) {
+    }
+
+    public BubbleOne(double a) {
+    }
+
+    public BubbleOne(double a, String b) {
     }
 
 
-	@Override
+    @Override
 	public String bubblify(String bubble) {
 		if (bubble.contains("@")) throw new IllegalArgumentException();
 		return "bubble" + bubble + "bubble";
