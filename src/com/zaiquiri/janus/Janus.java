@@ -11,7 +11,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Janus extends Runner {
     private final Class<?> clazz;
@@ -28,7 +27,8 @@ public class Janus extends Runner {
 
     @Override
     public void run(final RunNotifier notifier) {
-        runForAllImplementors(notifier);
+        final TesterFromInstanceFactory testerFactory = new MethodSuiteTesterFromInstanceFactory(interfaceUnderTest, testClassInstance, notifier, annotationReader.getTestMethods());
+        runForAllImplementors(testerFactory);
     }
 
     @Override
@@ -36,55 +36,65 @@ public class Janus extends Runner {
         return Description.createSuiteDescription(clazz.getName(), clazz.getAnnotations());
     }
 
-    private void runForAllImplementors(final RunNotifier notifier) {
+
+
+
+
+
+    private void runForAllImplementors(final TesterFromInstanceFactory testerFactory) {
         for (final Class<?> implementor : getImplementors()) {
-            runForImplementor(implementor, notifier);
+            runForImplementor(implementor, testerFactory);
         }
     }
-
-    private void runForImplementor(final Class<?> implementor, final RunNotifier notifier) {
-        runForAllConstructors(implementor, notifier);
-        // runForFactories(notifier, implementor);
-    }
-
-    private void runForAllConstructors(Class<?> implementation, RunNotifier notifier) {
-        for (final Constructor constructor : implementation.getConstructors()) {
-            runForAllInstancesOfConstructor(notifier, constructor);
-        }
-    }
-
-    private void runForAllInstancesOfConstructor(final RunNotifier notifier, final Constructor constructor) {
-        for (final Object instance : createAllInstancesFromConstructor(constructor)) {
-            Injector injector = new Injector() {
-                @Override
-                public void injectInstance() {
-                    final Exposer exposer = new Exposer();
-                    exposer.expose(interfaceUnderTest);
-                    try {
-                        interfaceUnderTest.set(testClassInstance, instance);
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            TestNotifierFactory testNotifierFactory = new TestNotifierFactory() {
-                @Override
-                public TestNotifier createNotifier(Method test) {
-                    final Description testDescription = Description.createTestDescription(instance.getClass(), test.getName());
-                    return new JunitTestNotifier(notifier, testDescription);
-                }
-            };
-            Tester suiteTester = new SuiteTestRunner(annotationReader.getTestMethods(), new SingleTesterFactory(testClassInstance, testNotifierFactory), injector);
-            //beforeall
-            suiteTester.test();
-            //afterall
-        }
-    }
-
 
     private Collection<Class<?>> getImplementors() {
         ClassFinder classFinder = getClassFinderForBasePackage(clazz);
         return classFinder.findImplementationsOf(interfaceUnderTest.getType());
+    }
+
+    private void runForImplementor(final Class<?> implementor, final TesterFromInstanceFactory testerFactory) {
+        runForAllConstructors(implementor, testerFactory);
+        runForFactories(implementor, testerFactory);
+    }
+
+    private ClassFinder getClassFinderForBasePackage(final Class<?> clazz) {
+        return new ClassFinder(annotationReader.getBasePackageUnderTest(clazz));
+    }
+
+
+
+
+
+
+
+
+
+    private void runForFactories(final Class<?> implementor, final TesterFromInstanceFactory testerFactory) {
+        for (final Method factory : getFactories(implementor)) {
+            Tester tester = new InstanceSuiteTester(testerFactory, createAllInstancesFromFactories(factory));
+            tester.test();
+        }
+    }
+
+    private Iterable<Object> createAllInstancesFromFactories(final Method factory) {
+        return new ArrayList<Object>();
+    }
+
+    private Iterable<Method> getFactories(final Class<?> implementor) {
+        return new ArrayList<Method>();
+    }
+
+
+
+
+
+
+
+    private void runForAllConstructors(Class<?> implementor, TesterFromInstanceFactory testerFactory) {
+        for (final Constructor constructor : implementor.getConstructors()) {
+            Tester tester = new InstanceSuiteTester(testerFactory, createAllInstancesFromConstructor(constructor));
+            tester.test();
+        }
     }
 
     private Iterable<Object> createAllInstancesFromConstructor(Constructor constructor) {
@@ -111,7 +121,5 @@ public class Janus extends Runner {
         return instances;
     }
 
-    private ClassFinder getClassFinderForBasePackage(final Class<?> clazz) {
-        return new ClassFinder(annotationReader.getBasePackageUnderTest(clazz));
-    }
+
 }

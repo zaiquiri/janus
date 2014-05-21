@@ -1,14 +1,14 @@
 package com.zaiquiri.janus;
 
 import java.lang.reflect.Method;
-import java.util.List;
+import java.util.Collection;
 
-public class SuiteTestRunner implements Tester {
-    private final List<Method> tests;
-    private final TesterFactory testerFactory;
+public class MethodSuiteTester implements Tester {
+    private final Collection<Method> tests;
+    private final TesterFromMethodFactory testerFactory;
     private final Injector injector;
 
-    public SuiteTestRunner(final List<Method> tests, final TesterFactory testerFactory, final Injector injector) {
+    public MethodSuiteTester(final Collection<Method> tests, final TesterFromMethodFactory testerFactory, final Injector injector) {
         this.tests = tests;
         this.testerFactory = testerFactory;
         this.injector = injector;

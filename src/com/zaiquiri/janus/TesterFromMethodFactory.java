@@ -2,6 +2,6 @@ package com.zaiquiri.janus;
 
 import java.lang.reflect.Method;
 
-public interface TesterFactory {
+public interface TesterFromMethodFactory {
     Tester createTester(Method test);
 }
