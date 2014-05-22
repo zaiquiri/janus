@@ -2,7 +2,6 @@ package com.zaiquiri.janus;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.notification.RunNotifier;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -10,15 +9,15 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class AnnotationReader {
-    private final Class<?> clazz;
+public final class TestContainerReader {
+    private final Class<?> testContainer;
 
-    public AnnotationReader(final Class<?> clazz) {
-        this.clazz = clazz;
+    public TestContainerReader(final Class<?> testContainer) {
+        this.testContainer = testContainer;
     }
 
     public String getBasePackageUnderTest() {
-        for (final Annotation annotation : clazz.getAnnotations()) {
+        for (final Annotation annotation : testContainer.getAnnotations()) {
             if (annotation.annotationType().equals(JanusOptions.class)) {
                 final JanusOptions options = (JanusOptions) annotation;
                 return options.basePackage();
@@ -28,7 +27,7 @@ public final class AnnotationReader {
     }
 
     public Field getInterfaceUnderTest() {
-        final Field[] fields = clazz.getDeclaredFields();
+        final Field[] fields = testContainer.getDeclaredFields();
         Field fieldUnderTest = null;
         int numberOfFieldsUnderTest = 0;
         for (final Field field : fields) {
@@ -48,7 +47,7 @@ public final class AnnotationReader {
 
     public List<TestCase> getTestCases() {
         final ArrayList<TestCase> testCases = new ArrayList<TestCase>();
-        for (final Method method : clazz.getDeclaredMethods()) {
+        for (final Method method : testContainer.getDeclaredMethods()) {
             if (isATestMethod(method)) {
                 testCases.add(new TestCase(method));
             }
@@ -62,5 +61,15 @@ public final class AnnotationReader {
 
     private boolean isATestMethod(final Method method) {
         return method.getAnnotation(Test.class) != null && method.getAnnotation(Ignore.class) == null;
+    }
+
+    public TestClassData getTestClassData() throws IllegalAccessException, InstantiationException {
+        final List<TestCase> testCases = getTestCases();
+        final Field interfaceUnderTest = getInterfaceUnderTest();
+        final String basePackage = getBasePackageUnderTest();
+        final TestSuite testSuite = new TestSuite(testCases);
+
+        return new TestClassData(testContainer.newInstance(), testSuite, interfaceUnderTest, basePackage);
+
     }
 }

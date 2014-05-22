@@ -3,17 +3,16 @@ package com.zaiquiri.janus;
 import org.junit.runner.notification.RunNotifier;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
 
 public class InjectingInstanceTestRunnerFactory implements InstanceTestRunnerFactory {
     private final Field interfaceUnderTest;
     private final Object testClassInstance;
     private final RunNotifier notifier;
-    private final Collection<TestCase> testCases;
+    private final TestSuite testCases;
 
     public InjectingInstanceTestRunnerFactory(final TestClassData testClassData, final RunNotifier notifier) {
         this.testClassInstance = testClassData.testClass();
-        this.testCases = testClassData.testMethods();
+        this.testCases = testClassData.testSuite();
         this.interfaceUnderTest = testClassData.interfaceUnderTest();
         this.notifier = notifier;
     }

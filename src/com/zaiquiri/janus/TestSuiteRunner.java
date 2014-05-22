@@ -1,13 +1,11 @@
 package com.zaiquiri.janus;
 
-import java.util.Collection;
-
 public class TestSuiteRunner implements Runnable {
-    private final Collection<TestCase> testSuite;
+    private final TestSuite testSuite;
     private final TestCaseRunnerFactory testCaseRunnerFactory;
 
-    public TestSuiteRunner(final Collection<TestCase> testCases, final TestCaseRunnerFactory testCaseRunnerFactory) {
-        this.testSuite = testCases;
+    public TestSuiteRunner(final TestSuite testSuite, final TestCaseRunnerFactory testCaseRunnerFactory) {
+        this.testSuite = testSuite;
         this.testCaseRunnerFactory = testCaseRunnerFactory;
     }
 

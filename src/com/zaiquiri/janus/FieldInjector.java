@@ -5,22 +5,21 @@ import java.lang.reflect.Field;
 public class FieldInjector implements Injector {
 
 
-    private final Field interfaceUnderTest;
-    private final Object testClassInstance;
+    private final Field fieldToBeSet;
+    private final Object instanceWithField;
     private final Object valueForField;
 
-    public FieldInjector(Field field, Object instanceWithField, Object valueForField) {
-
-        this.interfaceUnderTest = field;
-        this.testClassInstance = instanceWithField;
+    public FieldInjector(Field fieldToBeSet, Object instanceWithField, Object valueForField) {
+        this.fieldToBeSet = fieldToBeSet;
+        this.instanceWithField = instanceWithField;
         this.valueForField = valueForField;
     }
 
     @Override
     public void injectInstance() {
-        interfaceUnderTest.setAccessible(true);
+        fieldToBeSet.setAccessible(true);
         try {
-            interfaceUnderTest.set(testClassInstance, valueForField);
+            fieldToBeSet.set(instanceWithField, valueForField);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

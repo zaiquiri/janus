@@ -1,29 +1,37 @@
 package com.zaiquiri.janus;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
 
 public class TestClassData {
     private final Object testClass;
-    private final List<TestCase> testCases;
+    private final TestSuite testSuite;
     private final Field interfaceUnderTest;
+    private final String basePackage;
 
-    public TestClassData(final Object testClass, final List<TestCase> testCases, final Field interfaceUnderTest) {
+    public TestClassData(final Object testClass, final TestSuite testSuite, final Field interfaceUnderTest, final String basePackage) {
         this.testClass = testClass;
-        this.testCases = testCases;
+        this.testSuite = testSuite;
         this.interfaceUnderTest = interfaceUnderTest;
+        this.basePackage = basePackage;
     }
 
     public Object testClass() {
         return testClass;
     }
 
-    public List<TestCase> testMethods() {
-        return testCases;
+    public TestSuite testSuite() {
+        return testSuite;
     }
 
     public Field interfaceUnderTest() {
         return interfaceUnderTest;
+    }
+
+    public String basePackage() {
+        return basePackage;
+    }
+
+    public String getName() {
+        return testClass.getClass().getName();
     }
 }

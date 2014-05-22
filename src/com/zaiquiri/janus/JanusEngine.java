@@ -3,13 +3,13 @@ package com.zaiquiri.janus;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
-public class ClassTestRunner {
+public class JanusEngine {
 
     private final ClassFinder classFinder;
     private final TestSuiteForInstacesFactory testFactory;
     private final InstanceMaker instanceMaker;
 
-    public ClassTestRunner(ClassFinder classFinder, InstanceMaker instanceMaker, TestSuiteForInstacesFactory testSuiteFactory) {
+    public JanusEngine(ClassFinder classFinder, InstanceMaker instanceMaker, TestSuiteForInstacesFactory testSuiteFactory) {
         this.classFinder = classFinder;
         this.testFactory = testSuiteFactory;
         this.instanceMaker = instanceMaker;
