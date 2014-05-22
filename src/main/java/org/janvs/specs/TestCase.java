@@ -27,4 +27,9 @@ public class TestCase {
     public boolean shouldThrowException() {
         return expectedException() != org.junit.Test.None.class;
     }
+
+
+    public boolean expectsException(final Class<? extends Throwable> exception) {
+        return expectedException() == exception;
+    }
 }

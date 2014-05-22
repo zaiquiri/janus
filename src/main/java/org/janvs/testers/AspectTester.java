@@ -1,7 +1,7 @@
 package org.janvs.testers;
 
-import org.janvs.specs.TestCase;
 import org.janvs.junit.helpers.notifiers.TestNotifier;
+import org.janvs.specs.TestCase;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -19,37 +19,42 @@ public class AspectTester implements Tester {
     @Override
     public void run() {
         testStarted();
-        final Class<? extends Throwable> expectedException = testCase.expectedException();
         try {
             runTest();
-            if (testCase.shouldThrowException()) {
-                testFailed(new Exception("Expected exception " + testCase.expectedException().getName() + " not thrown"));
+            if (testShouldThrowException()) {
+                testFailedWithMissingException();
             } else {
                 testSucceeded();
             }
-        } catch (final InvocationTargetException e) {
-            if (theExpectedHappened(expectedException, e)) {
+        } catch (final InvocationTargetException exception) {
+            if (testExpected(exception)) {
                 testSucceeded();
             } else {
-                testFailed(e);
+                testFailedWith(exception);
             }
-        } catch (final Exception e) {
-            testFailed(e);
+        } catch (final Exception exception) {
+            testFailedWith(exception);
         }
+    }
+
+    private boolean testExpected(final InvocationTargetException exception) {
+        return testCase.expectsException(exception.getTargetException().getClass());
+    }
+
+    private boolean testShouldThrowException() {
+        return testCase.shouldThrowException();
+    }
+
+    private void testFailedWithMissingException() {
+        testFailedWith(new Exception("Expected exception " + testCase.expectedException().getName() + " not thrown"));
     }
 
     private void testStarted() {
         testNotifier.testStarted();
     }
 
-    private void testFailed(final Exception e) {
-        testNotifier.testFailed(e);
-    }
-
-    private boolean theExpectedHappened(
-            Class<? extends Throwable> expectedException,
-            InvocationTargetException e) {
-        return expectedException == e.getTargetException().getClass();
+    private void testFailedWith(final Exception exception) {
+        testNotifier.testFailed(exception);
     }
 
     private void testSucceeded() {
