@@ -2,7 +2,6 @@ package org.janvs;
 
 import org.janvs.factories.DefaultImplementationTesterFactory;
 import org.janvs.factories.DefaultInstanceTesterFactory;
-import org.janvs.factories.ImplementationTesterFactory;
 import org.janvs.factories.TestNotifierFactory;
 import org.janvs.instantiators.InstanceMaker;
 import org.janvs.instantiators.strategies.ConstructorStrategy;
@@ -13,33 +12,26 @@ import org.janvs.util.TestClassData;
 
 import java.util.Collection;
 
-public class TheOracle {
+public class JanusEngine {
     private final TestClassData testClassData;
 
-    public TheOracle(final TestClassData testClassData) {
+    public JanusEngine(final TestClassData testClassData) {
         this.testClassData = testClassData;
     }
 
-    public void prayToJanus(final TestNotifierFactory andGiveUsASign) {
-        ohPowerfulGodJanus(
-                letOurSystem(),
-                beAbleToMakeAllPossibleInstancesOfOurInterface(),
-                runTheTestsForAllOfThem(andGiveUsASign));
+    public void runWith(final TestNotifierFactory notifierFactory) {
+        new SystemTester(allImplementors(), InstanceMaker(), testerFactory(notifierFactory)).run();
     }
 
-    private void ohPowerfulGodJanus(final Collection<Class<?>> system, final InstanceMaker instanceMaker, final ImplementationTesterFactory implementationTesterFactory) {
-        new SystemTester(system, instanceMaker, implementationTesterFactory).run();
-    }
-
-    private Collection<Class<?>> letOurSystem() {
+    private Collection<Class<?>> allImplementors() {
         return new ClassFinder(basePackage()).findImplementationsOf(interfaceUnderTest());
     }
 
-    private InstanceMaker beAbleToMakeAllPossibleInstancesOfOurInterface() {
+    private InstanceMaker InstanceMaker() {
         return new InstanceMaker(new ConstructorStrategy(), new FactoryStrategy());
     }
 
-    private DefaultImplementationTesterFactory runTheTestsForAllOfThem(final TestNotifierFactory testNotifierFactory) {
+    private DefaultImplementationTesterFactory testerFactory(final TestNotifierFactory testNotifierFactory) {
         return new DefaultImplementationTesterFactory(instanceTesterFactory(testNotifierFactory));
     }
 

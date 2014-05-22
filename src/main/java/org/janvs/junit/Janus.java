@@ -1,33 +1,35 @@
 package org.janvs.junit;
 
-import org.janvs.TheOracle;
+import org.janvs.JanusEngine;
 import org.janvs.factories.JUnitTestNotifierFactory;
 import org.janvs.factories.TestNotifierFactory;
 import org.janvs.junit.helpers.TestContainerReader;
+import org.janvs.util.TestClassData;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
 
 public class Janus extends Runner {
-    private TheOracle theOracle;
+    private JanusEngine janusEngine;
 
     public Janus(final Class<?> testContainer) throws InstantiationException, IllegalAccessException {
-        this.theOracle = new TheOracle(new TestContainerReader(testContainer).getTestClassData());
+        final TestClassData testClassData = new TestContainerReader(testContainer).getTestClassData();
+        this.janusEngine = new JanusEngine(testClassData);
     }
 
     @Override
-    public void run(final RunNotifier here) {
-        theOracle.prayToJanus(andGiveUsASign(here));
+    public void run(final RunNotifier notifier) {
+        janusEngine.runWith(wrap(notifier));
     }
 
     @Override
     public Description getDescription() {
-        final String name = theOracle.getName();
+        final String name = janusEngine.getName();
         return Description.createSuiteDescription(name);
     }
 
-    private TestNotifierFactory andGiveUsASign(final RunNotifier here) {
-        return new JUnitTestNotifierFactory(here);
+    private TestNotifierFactory wrap(final RunNotifier notifier) {
+        return new JUnitTestNotifierFactory(notifier);
     }
 
 }
