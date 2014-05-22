@@ -17,6 +17,6 @@ public class TesterTest {
 
     @Test
     public void shouldRun() {
-        //tester.run();
+        tester.run();
     }
 }
