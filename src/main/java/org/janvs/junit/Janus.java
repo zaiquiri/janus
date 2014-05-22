@@ -1,9 +1,11 @@
 package org.janvs.junit;
 
 import org.janvs.JanusEngine;
-import org.janvs.factories.JUnitTestNotifierFactory;
-import org.janvs.factories.TestNotifierFactory;
+import org.janvs.factories.Factory;
+import org.janvs.factories.JUnitTestNotifierFactoryFactory;
 import org.janvs.junit.helpers.TestContainerReader;
+import org.janvs.junit.helpers.notifiers.TestNotifier;
+import org.janvs.specs.TestCase;
 import org.janvs.util.TestClassData;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
@@ -28,8 +30,8 @@ public class Janus extends Runner {
         return Description.createSuiteDescription(name);
     }
 
-    private TestNotifierFactory wrap(final RunNotifier notifier) {
-        return new JUnitTestNotifierFactory(notifier);
+    private static Factory<Factory<TestNotifier, TestCase>, Object> wrap(final RunNotifier notifier) {
+        return new JUnitTestNotifierFactoryFactory(notifier);
     }
 
 }

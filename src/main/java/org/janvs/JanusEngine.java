@@ -1,17 +1,17 @@
 package org.janvs;
 
-import org.janvs.factories.DefaultImplementationTesterFactory;
-import org.janvs.factories.DefaultInstanceTesterFactory;
-import org.janvs.factories.TestNotifierFactory;
-import org.janvs.instantiators.CompositeInstanceMaker;
-import org.janvs.instantiators.ConstructorInstanceMaker;
-import org.janvs.instantiators.FactoryInstanceMaker;
-import org.janvs.instantiators.InstanceMaker;
-import org.janvs.testers.SystemTester;
+import org.janvs.factories.*;
+import org.janvs.instantiators.*;
+import org.janvs.junit.helpers.notifiers.TestNotifier;
+import org.janvs.specs.TestCase;
+import org.janvs.testers.Tester;
 import org.janvs.util.ClassFinder;
 import org.janvs.util.TestClassData;
 
-import java.util.Collection;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+
+import static org.janvs.testers.TypeCollectionTester.typeCollectionTester;
 
 public class JanusEngine {
     private final TestClassData testClassData;
@@ -20,24 +20,26 @@ public class JanusEngine {
         this.testClassData = testClassData;
     }
 
-    public void runWith(final TestNotifierFactory notifierFactory) {
-        new SystemTester(allImplementors(), InstanceMaker(), testerFactory(notifierFactory)).run();
+    public void runWith(final Factory<Factory<TestNotifier, TestCase>, Object> andGiveUsASign) {
+        typeCollectionTester(new ClassFinder(basePackage()).findImplementationsOf(interfaceUnderTest()), runTheTestsForAllOfThem(andGiveUsASign)).run();
     }
 
-    private Collection<Class<?>> allImplementors() {
-        return new ClassFinder(basePackage()).findImplementationsOf(interfaceUnderTest());
+    private static InstanceMaker instanceMaker() {
+        return new CompositeInstanceMaker(
+                new TypeInstanceMaker<Constructor>(new ConstructorInstanceMakerAdapter()),
+                new TypeInstanceMaker<Method>(new FactoryInstanceMakerAdapter()));
     }
 
-    private InstanceMaker InstanceMaker() {
-        return new CompositeInstanceMaker(new ConstructorInstanceMaker(), new FactoryInstanceMaker());
+    private Factory<Tester, Class> runTheTestsForAllOfThem(final Factory<Factory<TestNotifier, TestCase>, Object> testNotifierFactoryFactory) {
+        return new ImplementationTesterFactory(instanceTesterFactory(testNotifierFactoryFactory), instanceMaker());
     }
 
-    private DefaultImplementationTesterFactory testerFactory(final TestNotifierFactory testNotifierFactory) {
-        return new DefaultImplementationTesterFactory(instanceTesterFactory(testNotifierFactory));
+    private Factory<Tester, Object> instanceTesterFactory(final Factory<Factory<TestNotifier, TestCase>, Object> testNotifierFactoryFactory) {
+        return new InstanceTesterFactory(testClassData.testSuite(), aspectTesterFactoryFactory(testNotifierFactoryFactory));
     }
 
-    private DefaultInstanceTesterFactory instanceTesterFactory(final TestNotifierFactory testNotifierFactory) {
-        return new DefaultInstanceTesterFactory(testClassData, testNotifierFactory);
+    private Factory<Factory<Tester, TestCase>, Object> aspectTesterFactoryFactory(final Factory<Factory<TestNotifier, TestCase>, Object> testNotifierFactoryFactory) {
+        return new AspectTesterFactoryFactory(testClassData.testClass(), testNotifierFactoryFactory, new FieldInjectorFactory(testClassData));
     }
 
     private String basePackage() {

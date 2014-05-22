@@ -11,6 +11,9 @@ public class AspectTester implements Tester {
     private final Object testClassInstance;
 
     public AspectTester(final TestCase testCase, final Object testClassInstance, final TestNotifier testNotifier) {
+        if (testCase == null || testClassInstance == null || testNotifier == null) {
+            throw new NullPointerException();
+        }
         this.testNotifier = testNotifier;
         this.testCase = testCase;
         this.testClassInstance = testClassInstance;
@@ -30,7 +33,7 @@ public class AspectTester implements Tester {
             if (testExpected(exception)) {
                 testSucceeded();
             } else {
-                testFailedWith(exception);
+                testFailedWith(new Exception(exception.getTargetException()));
             }
         } catch (final Exception exception) {
             testFailedWith(exception);

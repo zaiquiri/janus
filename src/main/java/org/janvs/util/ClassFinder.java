@@ -19,14 +19,14 @@ public class ClassFinder {
         this.basePackage = basePackage;
     }
 
-    public Collection<Class<?>> findImplementationsOf(final Class interfase) {
+    public Collection<Class> findImplementationsOf(final Class interfase) {
         final Set<String> allPackages = findAllPackages();
-        final Collection<Class<?>> allImplementors = new HashSet<>();
+        final Collection<Class> allImplementors = new HashSet<>();
 
         for (final String packageName : allPackages){
             final Reflections reflector = new Reflections(forPackage(packageName));
             @SuppressWarnings("unchecked")
-            final Set<Class<?>> implementors = (Set<Class<?>>) reflector.getSubTypesOf(interfase);
+            final Set<Class> implementors = (Set<Class>) reflector.getSubTypesOf(interfase);
             allImplementors.addAll(implementors);
         }
 

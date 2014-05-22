@@ -15,4 +15,8 @@ public class TestSuite implements Iterable<TestCase> {
     public Iterator<TestCase> iterator() {
         return testCases.iterator();
     }
+
+    public Collection<TestCase> testCases() {
+        return testCases;
+    }
 }

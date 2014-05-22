@@ -6,7 +6,15 @@ public class BubbleTwo implements Bubblable {
 
 	public BubbleTwo(){
 	}
-	
+
+    public static Bubblable bubblable() {
+        return new BubbleTwo();
+    }
+
+    public static BubbleTwo bubbleTwo() {
+        return new BubbleTwo();
+    }
+
 	@Override
 	public String bubblify(String bubble) {
 		if (bubble.contains("@")) throw new IllegalArgumentException();

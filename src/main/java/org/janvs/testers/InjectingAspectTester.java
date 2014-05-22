@@ -7,6 +7,9 @@ public class InjectingAspectTester implements Tester {
     private final Injector injector;
 
     public InjectingAspectTester(final Tester testCaseRunner, final Injector injector) {
+        if (testCaseRunner == null || injector == null) {
+            throw new NullPointerException();
+        }
         this.testCaseRunner = testCaseRunner;
         this.injector = injector;
     }

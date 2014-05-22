@@ -6,16 +6,21 @@ import org.janvs.junit.helpers.notifiers.TestNotifier;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 
-public class JUnitTestNotifierFactory implements TestNotifierFactory {
+public class JUnitTestNotifierFactory implements Factory<TestNotifier, TestCase> {
     private final RunNotifier notifier;
+    private final Object instance;
 
-    public JUnitTestNotifierFactory(final RunNotifier notifier) {
+    public JUnitTestNotifierFactory(final RunNotifier notifier, final Object instance) {
         this.notifier = notifier;
+        this.instance = instance;
     }
 
     @Override
-    public TestNotifier createNotifier(final Object instance, final TestCase test) {
-        final Description testDescription = Description.createTestDescription(instance.getClass(), test.getName());
-        return new JunitTestNotifier(notifier, testDescription);
+    public TestNotifier createFor(final TestCase test) {
+        return new JunitTestNotifier(notifier, description(test));
+    }
+
+    private Description description(final TestCase test) {
+        return Description.createTestDescription(instance.getClass(), test.getName());
     }
 }
