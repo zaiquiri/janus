@@ -1,11 +1,11 @@
-package org.janvs.instantiators.strategies;
+package org.janvs.instantiators;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class FactoryStrategy implements InstanceMakerStrategy{
+public class FactoryInstanceMaker implements InstanceMaker {
 
     @Override
     public Collection<Object> createInstancesOf(final Class<?> implementor) {

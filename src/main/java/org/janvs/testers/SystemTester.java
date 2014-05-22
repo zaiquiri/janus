@@ -20,7 +20,7 @@ public class SystemTester implements Tester {
     @Override
     public void run() {
         for (final Class<?> implementor : allImplementors) {
-            final Iterable<Object> instances = instanceMaker.getInstancesOf(implementor);
+            final Iterable<Object> instances = instanceMaker.createInstancesOf(implementor);
             implementationTesterFactory.createFor(instances).run();
         }
     }

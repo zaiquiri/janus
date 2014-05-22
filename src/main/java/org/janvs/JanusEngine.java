@@ -3,9 +3,10 @@ package org.janvs;
 import org.janvs.factories.DefaultImplementationTesterFactory;
 import org.janvs.factories.DefaultInstanceTesterFactory;
 import org.janvs.factories.TestNotifierFactory;
+import org.janvs.instantiators.CompositeInstanceMaker;
+import org.janvs.instantiators.ConstructorInstanceMaker;
+import org.janvs.instantiators.FactoryInstanceMaker;
 import org.janvs.instantiators.InstanceMaker;
-import org.janvs.instantiators.strategies.ConstructorStrategy;
-import org.janvs.instantiators.strategies.FactoryStrategy;
 import org.janvs.testers.SystemTester;
 import org.janvs.util.ClassFinder;
 import org.janvs.util.TestClassData;
@@ -28,7 +29,7 @@ public class JanusEngine {
     }
 
     private InstanceMaker InstanceMaker() {
-        return new InstanceMaker(new ConstructorStrategy(), new FactoryStrategy());
+        return new CompositeInstanceMaker(new ConstructorInstanceMaker(), new FactoryInstanceMaker());
     }
 
     private DefaultImplementationTesterFactory testerFactory(final TestNotifierFactory testNotifierFactory) {
