@@ -9,7 +9,7 @@ public class FieldInjector implements Injector {
     private final Object instanceWithField;
     private final Object valueForField;
 
-    public FieldInjector(Field fieldToBeSet, Object instanceWithField, Object valueForField) {
+    public FieldInjector(final Field fieldToBeSet, final Object instanceWithField, final Object valueForField) {
         this.fieldToBeSet = fieldToBeSet;
         this.instanceWithField = instanceWithField;
         this.valueForField = valueForField;

@@ -4,25 +4,32 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 
 public class JanusEngine {
+    private final TestClassData testClassData;
 
-    private final ClassFinder classFinder;
-    private final TestSuiteForInstacesFactory testFactory;
-    private final InstanceMaker instanceMaker;
-
-    public JanusEngine(ClassFinder classFinder, InstanceMaker instanceMaker, TestSuiteForInstacesFactory testSuiteFactory) {
-        this.classFinder = classFinder;
-        this.testFactory = testSuiteFactory;
-        this.instanceMaker = instanceMaker;
+    public JanusEngine(final TestClassData testClassData) {
+        this.testClassData = testClassData;
     }
 
-    public void testAllPossibleImplementationsOf(Field interfaceUnderTest) {
-        for (final Class<?> implementor : getAllClassesThatImplement(interfaceUnderTest)) {
-            Iterable<Object> instances = instanceMaker.getInstancesOf(implementor);
-            testFactory.createSuiteFor(instances).run();
-        }
+    public void runWith(final TestNotifierFactory testNotifierFactory) {
+        createSystemTester(testNotifierFactory).run();
     }
 
-    private Collection<Class<?>> getAllClassesThatImplement(final Field ourInterface) {
-        return classFinder.findImplementationsOf(ourInterface.getType());
+    private SystemTester createSystemTester(final TestNotifierFactory testNotifierFactory) {
+        final String basePackage = testClassData.basePackage();
+        final Field interfaceUnderTest = testClassData.interfaceUnderTest();
+
+        final InstanceTesterFactory instanceTesterFactory = new DefaultInstanceTesterFactory(testClassData, testNotifierFactory);
+        final ImplementationTesterFactory implementationTesterFactory = new DefaultImplementationTesterFactory(instanceTesterFactory);
+
+        final Collection<Class<?>> allImplementations = new ClassFinder(basePackage).findImplementationsOf(interfaceUnderTest.getType());
+        return new SystemTester(allImplementations, instanceMaker(), implementationTesterFactory);
+    }
+
+    private InstanceMaker instanceMaker() {
+        return new InstanceMaker(new ConstructorStrategy(), new FactoryStrategy());
+    }
+
+    public String getName() {
+        return testClassData.getName();
     }
 }

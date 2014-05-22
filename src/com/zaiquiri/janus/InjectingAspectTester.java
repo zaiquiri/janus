@@ -1,10 +1,10 @@
 package com.zaiquiri.janus;
 
-public class InjectingTestCaseRunner implements Runnable {
-    private final Runnable testCaseRunner;
+public class InjectingAspectTester implements Tester {
+    private final Tester testCaseRunner;
     private final Injector injector;
 
-    public InjectingTestCaseRunner(final Runnable testCaseRunner, final Injector injector) {
+    public InjectingAspectTester(final Tester testCaseRunner, final Injector injector) {
         this.testCaseRunner = testCaseRunner;
         this.injector = injector;
     }

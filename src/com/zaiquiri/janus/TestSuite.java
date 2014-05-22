@@ -5,11 +5,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 public class TestSuite implements Iterable<TestCase> {
-
     private final Collection<TestCase> testCases;
 
-    public TestSuite(Collection<TestCase> testCases) {
-
+    public TestSuite(final Collection<TestCase> testCases) {
         this.testCases = testCases;
     }
 

@@ -2,12 +2,12 @@ package com.zaiquiri.janus;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class TestCaseRunner implements Runnable {
+public class AspectTester implements Tester {
     private final TestNotifier testNotifier;
     private final TestCase testCase;
     private final Object testClassInstance;
 
-    public TestCaseRunner(final TestCase testCase, final Object testClassInstance, final TestNotifier testNotifier) {
+    public AspectTester(final TestCase testCase, final Object testClassInstance, final TestNotifier testNotifier) {
         this.testNotifier = testNotifier;
         this.testCase = testCase;
         this.testClassInstance = testClassInstance;

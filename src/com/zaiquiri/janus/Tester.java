@@ -1,5 +1,5 @@
 package com.zaiquiri.janus;
 
-public interface Runnable {
+public interface Tester {
     void run();
 }
