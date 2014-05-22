@@ -19,32 +19,32 @@ public class ClassFinder {
         this.basePackage = basePackage;
     }
 
-    public Collection<Class<?>> findImplementationsOf(Class interfase) {
+    public Collection<Class<?>> findImplementationsOf(final Class interfase) {
+        final Set<String> allPackages = findAllPackages();
+        final Collection<Class<?>> allImplementors = new HashSet<>();
 
-        Set<String> allPackages = findAllPackages();
-        Collection<Class<?>> allImplementors = new HashSet<Class<?>>();
-
-        for (String packageName : allPackages){
-            Reflections reflector = new Reflections(forPackage(packageName));
-            Set implementors = reflector.getSubTypesOf(interfase);
+        for (final String packageName : allPackages){
+            final Reflections reflector = new Reflections(forPackage(packageName));
+            @SuppressWarnings("unchecked")
+            final Set<Class<?>> implementors = (Set<Class<?>>) reflector.getSubTypesOf(interfase);
             allImplementors.addAll(implementors);
         }
 
         return allImplementors;
     }
 
-    public Set<String> findAllPackages() {
-        List<ClassLoader> classLoadersList = new LinkedList<ClassLoader>();
+    private Set<String> findAllPackages() {
+        final List<ClassLoader> classLoadersList = new LinkedList<>();
         classLoadersList.add(ClasspathHelper.contextClassLoader());
         classLoadersList.add(ClasspathHelper.staticClassLoader());
 
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
+        final Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setScanners(new SubTypesScanner(false), new ResourcesScanner())
-                .setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
+                .setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[classLoadersList.size()])))
                 .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(basePackage))));
-        Set<Class<? extends Object>> classes = reflections.getSubTypesOf(Object.class);
-        Set<String> packageNameSet = new TreeSet<String>();
-        for (Class classInstance : classes) {
+        final Set<Class<?>> classes = reflections.getSubTypesOf(Object.class);
+        final Set<String> packageNameSet = new TreeSet<>();
+        for (final Class classInstance : classes) {
             packageNameSet.add(classInstance.getPackage().getName());
         }
         return packageNameSet;

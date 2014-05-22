@@ -21,7 +21,7 @@ public final class TestContainerReader {
         this.testContainer = testContainer;
     }
 
-    public String getBasePackageUnderTest() {
+    private String getBasePackageUnderTest() {
         for (final Annotation annotation : testContainer.getAnnotations()) {
             if (annotation.annotationType().equals(JanusOptions.class)) {
                 final JanusOptions options = (JanusOptions) annotation;
@@ -31,7 +31,7 @@ public final class TestContainerReader {
         throw new RuntimeException("Base package not defined in @" + JanusOptions.class.getName() + " annotation");
     }
 
-    public Field getInterfaceUnderTest() {
+    private Field getInterfaceUnderTest() {
         final Field[] fields = testContainer.getDeclaredFields();
         Field fieldUnderTest = null;
         int numberOfFieldsUnderTest = 0;
@@ -50,8 +50,8 @@ public final class TestContainerReader {
         throw new RuntimeException("No field designated as @" + UnderTest.class.getName());
     }
 
-    public List<TestCase> getTestCases() {
-        final ArrayList<TestCase> testCases = new ArrayList<TestCase>();
+    private List<TestCase> getTestCases() {
+        final ArrayList<TestCase> testCases = new ArrayList<>();
         for (final Method method : testContainer.getDeclaredMethods()) {
             if (isATestMethod(method)) {
                 testCases.add(new TestCase(method));
@@ -60,11 +60,11 @@ public final class TestContainerReader {
         return testCases;
     }
 
-    private boolean isUnderTest(Field field) {
+    private static boolean isUnderTest(final Field field) {
         return field.getAnnotation(UnderTest.class) != null;
     }
 
-    private boolean isATestMethod(final Method method) {
+    static private boolean isATestMethod(final Method method) {
         return method.getAnnotation(Test.class) != null && method.getAnnotation(Ignore.class) == null;
     }
 

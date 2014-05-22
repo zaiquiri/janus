@@ -12,7 +12,7 @@ public class CompositeInstanceMaker implements InstanceMaker {
 
     @Override
     public Collection<Object> createInstancesOf(final Class<?> implementor) {
-        final Collection<Object> instances = new ArrayList<Object>();
+        final Collection<Object> instances = new ArrayList<>();
         for (final InstanceMaker strategy : strategies) {
             instances.addAll(strategy.createInstancesOf(implementor));
         }

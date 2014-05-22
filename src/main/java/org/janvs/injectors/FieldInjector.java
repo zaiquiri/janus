@@ -20,7 +20,7 @@ public class FieldInjector implements Injector {
         fieldToBeSet.setAccessible(true);
         try {
             fieldToBeSet.set(instanceWithField, valueForField);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             e.printStackTrace();
         }
     }
