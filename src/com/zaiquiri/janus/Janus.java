@@ -5,23 +5,25 @@ import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
 
 public class Janus extends Runner {
-    private JanusEngine janusEngine;
+    private TheOracle theOracle;
 
     public Janus(final Class<?> testContainer) throws InstantiationException, IllegalAccessException {
-        this.janusEngine = new JanusEngine(new TestContainerReader(testContainer).getTestClassData());
+        this.theOracle = new TheOracle(new TestContainerReader(testContainer).getTestClassData());
     }
 
     @Override
-    public void run(final RunNotifier notifier) {
-        TestNotifierFactory testNotifierFactory = new JUnitTestNotifierFactory(notifier);
-        janusEngine.runWith(testNotifierFactory);
+    public void run(final RunNotifier here) {
+        theOracle.prayToJanus(andGiveUsASign(here));
     }
 
     @Override
     public Description getDescription() {
-        final String name = janusEngine.getName();
+        final String name = theOracle.getName();
         return Description.createSuiteDescription(name);
     }
 
+    private TestNotifierFactory andGiveUsASign(final RunNotifier here) {
+        return new JUnitTestNotifierFactory(here);
+    }
 
 }
