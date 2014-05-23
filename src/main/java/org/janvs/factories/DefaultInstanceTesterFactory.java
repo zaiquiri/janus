@@ -28,7 +28,6 @@ public class DefaultInstanceTesterFactory implements InstanceTesterFactory {
                 = new FieldInjector(interfaceUnderTest, testClassInstance, implementationOfInterface);
         final AspectTesterFactory aspectTesterFactory
                 = new InjectingAspectTesterFactory(testClassInstance, testNotifierFactory, injector, implementationOfInterface);
-
         return new InstanceTester(testSuite, aspectTesterFactory);
     }
 }

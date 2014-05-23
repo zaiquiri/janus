@@ -51,7 +51,7 @@ public final class TestContainerReader {
     }
 
     private List<TestCase> getTestCases() {
-        final ArrayList<TestCase> testCases = new ArrayList<>();
+        final ArrayList<TestCase> testCases = new ArrayList<TestCase>();
         for (final Method method : testContainer.getDeclaredMethods()) {
             if (isATestMethod(method)) {
                 testCases.add(new TestCase(method));
