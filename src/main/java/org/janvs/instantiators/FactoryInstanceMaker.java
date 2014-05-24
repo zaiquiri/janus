@@ -53,20 +53,20 @@ public class FactoryInstanceMaker implements InstanceMaker {
 
     private ArrayList getAllCombos(final Class<?>[] parameters) {
         final ArrayList<Object> allCombos = new ArrayList<>();
+        final int numberOfParamsNeeded = parameters.length;
+        final double numberOfCombos = Math.pow(2, numberOfParamsNeeded);
 
-        final int numberOfParams = parameters.length;
-
-        final double numberOfCombos = Math.pow(2, numberOfParams);
-        for (int i = 0; i < numberOfCombos; i++) {
-            char[] binary = toBinary(i, numberOfParams);
-
+        for (int comboNumber = 0; comboNumber < numberOfCombos; comboNumber++) {
+            boolean[] booleans = getBooleanArrayFor(comboNumber, numberOfParamsNeeded);
             final ArrayList<Object> combo = new ArrayList<>();
-            while (combo.size() < numberOfParams) {
-                if (binary[combo.size()] == '1') {
-                    if (Modifier.isFinal(parameters[combo.size()].getModifiers())){
-                        combo.add(null);
+
+            while (combo.size() < numberOfParamsNeeded) {
+                if (booleans[combo.size()]) {
+                    final Class<?> parameter = parameters[combo.size()];
+                    if (isFinalClass(parameter)){
+                        combo.add(null); //cannot mock
                     } else {
-                        combo.add(mock(parameters[combo.size()]));
+                        combo.add(mock(parameter));
                     }
                 } else {
                     combo.add(null);
@@ -77,25 +77,27 @@ public class FactoryInstanceMaker implements InstanceMaker {
         return allCombos;
     }
 
-    private char[] toBinary(final int value, final int numberOfPlaces) {
+    private boolean isFinalClass(final Class<?> parameter) {
+        return Modifier.isFinal(parameter.getModifiers());
+    }
+
+    private boolean[] getBooleanArrayFor(final int value, final int numberOfPlaces) {
         String binary = Integer.toBinaryString(value);
         if (binary.length() < numberOfPlaces){
             binary = padWithZeros(binary, numberOfPlaces);
         }
-        return binary.toCharArray();
+        final char[] binaryArray = binary.toCharArray();
+        final boolean[] booleans = new boolean[binaryArray.length];
+        for (int i = 0; i < binary.length(); i++)
+            booleans[i] = binaryArray[i] == '1' ? true : false;
+        return booleans;
     }
 
-    private String padWithZeros(String binary, final double numberOfCombos) {
-        for (int i = 0; i<numberOfCombos-binary.length(); i++){
+    private String padWithZeros(String binary, final double numberOfPlaces) {
+        for (int i = 0; i<numberOfPlaces-binary.length(); i++){
             binary = "0" + binary;
         }
         return binary;
-    }
-
-    private Object popFirstOff(final ArrayList parameters) {
-        final Object first = parameters.get(0);
-        parameters.remove(first);
-        return first;
     }
 
     private Object makeInstanceWith(final Method constructor, List parameters) {
