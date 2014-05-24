@@ -9,7 +9,6 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class FactoryInstanceMakerTest {
@@ -44,7 +43,7 @@ public class FactoryInstanceMakerTest {
         final List<Object> instances = new FactoryInstanceMaker().createInstancesOf(oneFactoryOneArg);
 
         assertThat(instances.size(), is(2));
-        for (Object instance : instances){
+        for (Object instance : instances) {
             assertTrue(oneFactoryOneArg.isInstance(instance));
         }
     }
@@ -56,7 +55,7 @@ public class FactoryInstanceMakerTest {
         final List<Object> instances = new FactoryInstanceMaker().createInstancesOf(oneFactoryTwoArgs);
 
         assertThat(instances.size(), is(4));
-        for (Object instance : instances){
+        for (Object instance : instances) {
             assertTrue(oneFactoryTwoArgs.isInstance(instance));
         }
     }
@@ -68,8 +67,20 @@ public class FactoryInstanceMakerTest {
         final List<Object> instances = new FactoryInstanceMaker().createInstancesOf(twoFactoriesTwoArgs);
 
         assertThat(instances.size(), is(8));
-        for (Object instance : instances){
+        for (Object instance : instances) {
             assertTrue(twoFactoriesTwoArgs.isInstance(instance));
+        }
+    }
+
+    @Test
+    public void shouldCreateTwoInstancesWhenOnFactoryMethodTakesOnePrimitiveTypeAsArgument() {
+        final Class<? extends PrimitiveArgs> primitiveArg = new PrimitiveArgs().getClass();
+
+        final List<Object> instances = new FactoryInstanceMaker().createInstancesOf(primitiveArg);
+
+        assertThat(instances.size(), is(2));
+        for (Object instance : instances){
+            assertTrue(primitiveArg.isInstance(instance));
         }
     }
 
@@ -83,10 +94,6 @@ public class FactoryInstanceMakerTest {
 //        assertTrue(String.class.isInstance(myClass.param));
 //    }
 //
-
-
-
-
 
 
     class NoFactories {
@@ -106,11 +113,12 @@ public class FactoryInstanceMakerTest {
             return new OneFactoryOneArg(arg);
         }
 
-        private OneFactoryOneArg(ArrayList arg){
+        private OneFactoryOneArg(ArrayList arg) {
             this.arg = arg;
         }
 
-        public OneFactoryOneArg(){}
+        public OneFactoryOneArg() {
+        }
 
     }
 
@@ -123,12 +131,13 @@ public class FactoryInstanceMakerTest {
             return new OneFactoryTwoArgs(arg1, arg2);
         }
 
-        private OneFactoryTwoArgs(ArrayList arg1, ArrayList arg2){
+        private OneFactoryTwoArgs(ArrayList arg1, ArrayList arg2) {
             this.arg1 = arg1;
             this.arg2 = arg2;
         }
 
-        public OneFactoryTwoArgs(){}
+        public OneFactoryTwoArgs() {
+        }
     }
 
     static class TwoFactoriesTwoArgs {
@@ -143,16 +152,23 @@ public class FactoryInstanceMakerTest {
             return new TwoFactoriesTwoArgs(arg1, arg2);
         }
 
-        private TwoFactoriesTwoArgs(List arg1, List arg2){
+        private TwoFactoriesTwoArgs(List arg1, List arg2) {
             this.arg1 = arg1;
             this.arg2 = arg2;
         }
 
-        public TwoFactoriesTwoArgs(){}
+        public TwoFactoriesTwoArgs() {
+        }
     }
 
     static class PrimitiveArgs {
+        public static PrimitiveArgs makeMe(int i){
+            return new PrimitiveArgs();
+        }
 
+        public PrimitiveArgs() {
+
+        }
     }
 
     static class OnePrimitiveOneObjectArg {
@@ -164,15 +180,16 @@ public class FactoryInstanceMakerTest {
 
         String param;
 
-        public static ClassWithFinalParam makeMe(String finalParam){
+        public static ClassWithFinalParam makeMe(String finalParam) {
             return new ClassWithFinalParam(finalParam);
         }
 
-        private ClassWithFinalParam(String finalParam){
+        private ClassWithFinalParam(String finalParam) {
             this.param = finalParam;
         }
 
-        public ClassWithFinalParam(){}
+        public ClassWithFinalParam() {
+        }
     }
 }
 

@@ -11,6 +11,8 @@ import static org.mockito.Mockito.mock;
 
 public class FactoryInstanceMaker implements InstanceMaker {
 
+    public static final String PRIMITIVE = "primitive";
+
     @Override
     public List<Object> createInstancesOf(final Class<?> clazz) {
         final ArrayList<Object> instances = new ArrayList<>();
@@ -40,7 +42,7 @@ public class FactoryInstanceMaker implements InstanceMaker {
     private List<Object> allInstancesFrom(final Method factory) {
         final List<Object> instances = new ArrayList<>();
         final Collection allParameterCombinations = getAllParameterCombinations(factory);
-        for ( Object params: allParameterCombinations){
+        for (Object params : allParameterCombinations) {
             instances.add(makeInstanceWith(factory, (List) params));
         }
         return instances;
@@ -61,20 +63,47 @@ public class FactoryInstanceMaker implements InstanceMaker {
             final ArrayList<Object> combo = new ArrayList<>();
 
             while (combo.size() < numberOfParamsNeeded) {
+                final Class<?> parameter = parameters[combo.size()];
                 if (booleans[combo.size()]) {
-                    final Class<?> parameter = parameters[combo.size()];
-                    if (isFinalClass(parameter)){
+                    if (parameter.isPrimitive()) {
+                        combo.add(primitive(parameter));
+                    } else if (isFinalClass(parameter)) {
                         combo.add(null); //cannot mock
                     } else {
                         combo.add(mock(parameter));
                     }
                 } else {
-                    combo.add(null);
+                    if (parameter.isPrimitive()) {
+                        combo.add(primitive(parameter));
+                    } else {
+                        combo.add(null);
+                    }
                 }
             }
             allCombos.add(combo);
         }
         return allCombos;
+    }
+
+    private Object primitive(final Class<?> parameter) {
+        if (byte.class == parameter){
+            return Byte.valueOf((byte) 0);
+        } else if (short.class == parameter){
+            return Short.valueOf((short) 0);
+        } else if (int.class == parameter){
+            return Integer.valueOf(0);
+        } else if (long.class == parameter){
+            return Long.valueOf(0);
+        } else if (float.class == parameter){
+            return Float.valueOf(0);
+        } else if (double.class == parameter){
+            return Double.valueOf(0);
+        } else if (boolean.class == parameter){
+            return Boolean.valueOf(false);
+        } else if (char.class == parameter){
+            return Character.valueOf((char) 0);
+        }
+        return null;
     }
 
     private boolean isFinalClass(final Class<?> parameter) {
@@ -83,7 +112,7 @@ public class FactoryInstanceMaker implements InstanceMaker {
 
     private boolean[] getBooleanArrayFor(final int value, final int numberOfPlaces) {
         String binary = Integer.toBinaryString(value);
-        if (binary.length() < numberOfPlaces){
+        if (binary.length() < numberOfPlaces) {
             binary = padWithZeros(binary, numberOfPlaces);
         }
         final char[] binaryArray = binary.toCharArray();
@@ -94,7 +123,7 @@ public class FactoryInstanceMaker implements InstanceMaker {
     }
 
     private String padWithZeros(String binary, final double numberOfPlaces) {
-        for (int i = 0; i<numberOfPlaces-binary.length(); i++){
+        for (int i = 0; i < numberOfPlaces - binary.length(); i++) {
             binary = "0" + binary;
         }
         return binary;
@@ -110,4 +139,5 @@ public class FactoryInstanceMaker implements InstanceMaker {
         }
         return null;
     }
+
 }
