@@ -79,7 +79,7 @@ public class FactoryInstanceMakerTest {
         final List<Object> instances = new FactoryInstanceMaker().createInstancesOf(primitiveArg);
 
         assertThat(instances.size(), is(2));
-        for (Object instance : instances){
+        for (Object instance : instances) {
             assertTrue(primitiveArg.isInstance(instance));
         }
     }
@@ -91,24 +91,25 @@ public class FactoryInstanceMakerTest {
         final List<Object> instances = new FactoryInstanceMaker().createInstancesOf(onePrimitiveOneObjectArg);
 
         assertThat(instances.size(), is(4));
-        for (Object instance : instances){
+        for (Object instance : instances) {
             assertTrue(onePrimitiveOneObjectArg.isInstance(instance));
         }
     }
 
+    @Test
+    public void shouldReturnTwoInstancesWhenFactoryConstructorHasPrameterOfAFinalClass() {
+        final Class<? extends ClassWithFinalParam> classWithFinalParam = new ClassWithFinalParam().getClass();
+
+        final List<Object> instances = new FactoryInstanceMaker().createInstancesOf(classWithFinalParam);
+
+        assertThat(instances.size(), is(2));
+        for (Object instance : instances) {
+            assertTrue(classWithFinalParam.isInstance(instance));
+        }
+    }
 
 
-//    @Test
-//    public void shouldMakeInstanceWithAnInstanceOfItParameterClassEvenWhenThatClassIsFinal(){
-//        final Class<? extends ClassWithFinalParam> oneFactoryOneArg = new ClassWithFinalParam().getClass();
-//
-//        final List<Object> instances = new FactoryInstanceMaker().createInstancesOf(oneFactoryOneArg);
-//
-//        final ClassWithFinalParam myClass = (ClassWithFinalParam) instances.get(0);
-//        assertTrue(String.class.isInstance(myClass.param));
-//    }
-//
-
+    /// Classes ///
 
     class NoFactories {
     }
@@ -176,7 +177,7 @@ public class FactoryInstanceMakerTest {
     }
 
     static class PrimitiveArgs {
-        public static PrimitiveArgs makeMe(int i){
+        public static PrimitiveArgs makeMe(int i) {
             return new PrimitiveArgs();
         }
 
@@ -186,13 +187,13 @@ public class FactoryInstanceMakerTest {
     }
 
     static class OnePrimitiveOneObjectArg {
-        public static OnePrimitiveOneObjectArg makeMe(int i, ArrayList a){
+        public static OnePrimitiveOneObjectArg makeMe(int i, ArrayList a) {
             return new OnePrimitiveOneObjectArg();
         }
 
-        public OnePrimitiveOneObjectArg() {}
+        public OnePrimitiveOneObjectArg() {
+        }
     }
-
 
     private static class ClassWithFinalParam {
 

@@ -1,5 +1,6 @@
 package org.janvs.instantiators;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -63,19 +64,9 @@ public class FactoryInstanceMaker implements InstanceMaker {
             while (combo.size() < numberOfParamsNeeded) {
                 final Class<?> parameter = parameters[combo.size()];
                 if (booleans[combo.size()]) {
-                    if (parameter.isPrimitive()) {
-                        combo.add(primitive(parameter));
-                    } else if (isFinalClass(parameter)) {
-                        combo.add(null); //cannot mock
-                    } else {
-                        combo.add(mock(parameter));
-                    }
+                    addMockFor(parameter, combo);
                 } else {
-                    if (parameter.isPrimitive()) {
-                        combo.add(primitive(parameter));
-                    } else {
-                        combo.add(null);
-                    }
+                    addNullFor(parameter, combo);
                 }
             }
             allCombos.add(combo);
@@ -83,22 +74,100 @@ public class FactoryInstanceMaker implements InstanceMaker {
         return allCombos;
     }
 
+    private void addNullFor(final Class<?> parameter, final ArrayList<Object> combo) {
+        if (parameter.isPrimitive()) {
+            combo.add(primitive(parameter));
+        } else {
+            combo.add(null);
+        }
+    }
+
+    private void addMockFor(final Class<?> parameter, final ArrayList<Object> combo) {
+        if (parameter.isPrimitive()) {
+            combo.add(primitive(parameter));
+        } else if (isFinalClass(parameter)) {
+            combo.add(finalClass(parameter));
+        } else {
+            combo.add(mock(parameter));
+        }
+    }
+
+    private Object finalClass(final Class<?> clazz) {
+        try {
+            if (clazz.getConstructors().length > 0) {
+                final Object constructorInstance = createClassFromConstructor(clazz);
+                if (constructorInstance != null)
+                    return constructorInstance;
+                if (hasAFactoryConstructor(clazz)) {
+                    final Object factoryInstance = createClassFromFactory(clazz);
+                    if (factoryInstance != null)
+                        return factoryInstance;
+                }
+            }
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return clazz.cast(null);
+    }
+
+    private Object createClassFromFactory(final Class<?> clazz) throws InvocationTargetException, IllegalAccessException {
+        Method constructor = null;
+        for (Method method : clazz.getMethods()) {
+            if (method.getReturnType() == clazz)
+                constructor = method;
+        }
+        final int numberOfParams = constructor.getParameterTypes().length;
+        try {
+            return constructor.invoke(clazz, new Object[numberOfParams]);
+        } catch (Exception e) {}
+        return null;
+    }
+
+    private boolean hasAFactoryConstructor(final Class<?> clazz) {
+        for (Method method : clazz.getMethods()) {
+            if (method.getReturnType() == clazz)
+                return true;
+        }
+        return false;
+    }
+
+    private Object createClassFromConstructor(final Class<?> clazz) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+        final Constructor<?> constructor = clazz.getConstructors()[0];
+        final int numberOfParams = constructor.getParameterTypes().length;
+        if (numberOfParams == 0) {
+            return constructor.newInstance();
+        }
+        final ArrayList<Object> params = new ArrayList<>();
+        for (Class param : constructor.getParameterTypes()) {
+            addNullFor(param, params);
+        }
+        try {
+            return constructor.newInstance(params.toArray());
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
     private Object primitive(final Class<?> parameter) {
-        if (byte.class == parameter){
+        if (byte.class == parameter) {
             return Byte.valueOf((byte) 0);
-        } else if (short.class == parameter){
+        } else if (short.class == parameter) {
             return Short.valueOf((short) 0);
-        } else if (int.class == parameter){
+        } else if (int.class == parameter) {
             return Integer.valueOf(0);
-        } else if (long.class == parameter){
+        } else if (long.class == parameter) {
             return Long.valueOf(0);
-        } else if (float.class == parameter){
+        } else if (float.class == parameter) {
             return Float.valueOf(0);
-        } else if (double.class == parameter){
+        } else if (double.class == parameter) {
             return Double.valueOf(0);
-        } else if (boolean.class == parameter){
+        } else if (boolean.class == parameter) {
             return Boolean.valueOf(false);
-        } else if (char.class == parameter){
+        } else if (char.class == parameter) {
             return Character.valueOf((char) 0);
         }
         return null;
