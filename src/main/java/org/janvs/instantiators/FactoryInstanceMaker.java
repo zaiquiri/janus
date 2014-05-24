@@ -11,8 +11,6 @@ import static org.mockito.Mockito.mock;
 
 public class FactoryInstanceMaker implements InstanceMaker {
 
-    public static final String PRIMITIVE = "primitive";
-
     @Override
     public List<Object> createInstancesOf(final Class<?> clazz) {
         final ArrayList<Object> instances = new ArrayList<>();

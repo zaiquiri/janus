@@ -84,6 +84,20 @@ public class FactoryInstanceMakerTest {
         }
     }
 
+    @Test
+    public void shouldCreateFourInstancesWhenOneFactoryConstructorTakesOnePrimitiveArgAndOneObjectArg() {
+        final Class<? extends OnePrimitiveOneObjectArg> onePrimitiveOneObjectArg = new OnePrimitiveOneObjectArg().getClass();
+
+        final List<Object> instances = new FactoryInstanceMaker().createInstancesOf(onePrimitiveOneObjectArg);
+
+        assertThat(instances.size(), is(4));
+        for (Object instance : instances){
+            assertTrue(onePrimitiveOneObjectArg.isInstance(instance));
+        }
+    }
+
+
+
 //    @Test
 //    public void shouldMakeInstanceWithAnInstanceOfItParameterClassEvenWhenThatClassIsFinal(){
 //        final Class<? extends ClassWithFinalParam> oneFactoryOneArg = new ClassWithFinalParam().getClass();
@@ -172,7 +186,11 @@ public class FactoryInstanceMakerTest {
     }
 
     static class OnePrimitiveOneObjectArg {
+        public static OnePrimitiveOneObjectArg makeMe(int i, ArrayList a){
+            return new OnePrimitiveOneObjectArg();
+        }
 
+        public OnePrimitiveOneObjectArg() {}
     }
 
 
