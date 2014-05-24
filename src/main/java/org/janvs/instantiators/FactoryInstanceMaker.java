@@ -123,7 +123,8 @@ public class FactoryInstanceMaker implements InstanceMaker {
         final int numberOfParams = constructor.getParameterTypes().length;
         try {
             return constructor.invoke(clazz, new Object[numberOfParams]);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return null;
     }
 

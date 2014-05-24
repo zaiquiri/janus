@@ -24,7 +24,6 @@ public class FactoryInstanceMakerTest {
 
     }
 
-
     @Test
     public void shouldReturnOneInstanceWhenFactoryConstructorTakesNoArguments() {
 
@@ -107,7 +106,6 @@ public class FactoryInstanceMakerTest {
             assertTrue(classWithFinalParam.isInstance(instance));
         }
     }
-
 
     /// Classes ///
 
