@@ -9,7 +9,7 @@ import org.janvs.instantiators.FactoryInstanceMaker;
 import org.janvs.instantiators.InstanceMaker;
 import org.janvs.testers.SystemTester;
 import org.janvs.util.ClassFinder;
-import org.janvs.util.TestClassData;
+import org.janvs.specs.TestClassData;
 
 import java.util.Collection;
 

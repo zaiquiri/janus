@@ -4,7 +4,7 @@ import org.janvs.annotations.JanusOptions;
 import org.janvs.annotations.UnderTest;
 import org.janvs.specs.TestCase;
 import org.janvs.specs.TestSuite;
-import org.janvs.util.TestClassData;
+import org.janvs.specs.TestClassData;
 import org.junit.Ignore;
 import org.junit.Test;
 

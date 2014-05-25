@@ -1,4 +1,4 @@
-package org.janvs.util;
+package org.janvs.specs;
 
 import org.janvs.specs.TestSuite;
 

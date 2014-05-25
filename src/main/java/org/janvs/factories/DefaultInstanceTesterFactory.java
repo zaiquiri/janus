@@ -3,7 +3,7 @@ package org.janvs.factories;
 import org.janvs.injectors.FieldInjector;
 import org.janvs.injectors.Injector;
 import org.janvs.testers.InstanceTester;
-import org.janvs.util.TestClassData;
+import org.janvs.specs.TestClassData;
 import org.janvs.specs.TestSuite;
 import org.janvs.testers.Tester;
 

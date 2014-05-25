@@ -4,7 +4,7 @@ import org.janvs.JanusEngine;
 import org.janvs.factories.JUnitTestNotifierFactory;
 import org.janvs.factories.TestNotifierFactory;
 import org.janvs.junit.helpers.TestContainerReader;
-import org.janvs.util.TestClassData;
+import org.janvs.specs.TestClassData;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
