@@ -54,24 +54,29 @@ public class FactoryInstanceMaker implements InstanceMaker {
 
     private ArrayList getAllCombos(final Class<?>[] parameters) {
         final ArrayList<Object> allCombos = new ArrayList<>();
-        final int numberOfParamsNeeded = parameters.length;
-        final double numberOfCombos = Math.pow(2, numberOfParamsNeeded);
+        final int numberOfParams = parameters.length;
+        final double numberOfCombos = Math.pow(2, numberOfParams);
 
         for (int comboNumber = 0; comboNumber < numberOfCombos; comboNumber++) {
-            boolean[] booleans = getBooleanArrayFor(comboNumber, numberOfParamsNeeded);
-            final ArrayList<Object> combo = new ArrayList<>();
-
-            while (combo.size() < numberOfParamsNeeded) {
-                final Class<?> parameter = parameters[combo.size()];
-                if (booleans[combo.size()]) {
-                    addMockFor(parameter, combo);
-                } else {
-                    addNullFor(parameter, combo);
-                }
-            }
-            allCombos.add(combo);
+            boolean[] booleans = getBooleanRepresentationFor(comboNumber, numberOfParams);
+            allCombos.add(makeCombo(parameters, booleans));
         }
         return allCombos;
+    }
+
+    private ArrayList<Object> makeCombo(final Class<?>[] parameters, final boolean[] booleanSchema) {
+        final ArrayList<Object> combo = new ArrayList<>();
+        final int numberOfParametersNeeded = parameters.length;
+
+        while (combo.size() < numberOfParametersNeeded) {
+            final Class<?> parameter = parameters[combo.size()];
+            if (booleanSchema[combo.size()]) {
+                addMockFor(parameter, combo);
+            } else {
+                addNullFor(parameter, combo);
+            }
+        }
+        return combo;
     }
 
     private void addNullFor(final Class<?> parameter, final ArrayList<Object> combo) {
@@ -86,49 +91,54 @@ public class FactoryInstanceMaker implements InstanceMaker {
         if (parameter.isPrimitive()) {
             combo.add(primitive(parameter));
         } else if (isFinalClass(parameter)) {
-            combo.add(finalClass(parameter));
+            combo.add(mockFinalClass(parameter));
         } else {
             combo.add(mock(parameter));
         }
     }
 
-    private Object finalClass(final Class<?> clazz) {
-        try {
-            if (clazz.getConstructors().length > 0) {
-                final Object constructorInstance = createClassFromConstructor(clazz);
-                if (constructorInstance != null)
-                    return constructorInstance;
-                if (hasAFactoryConstructor(clazz)) {
-                    final Object factoryInstance = createClassFromFactory(clazz);
-                    if (factoryInstance != null)
-                        return factoryInstance;
-                }
-            }
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+    private Object mockFinalClass(final Class<?> clazz) {
+        if (thereAreConstructorsIn(clazz)) {
+            final Object constructorInstance = createClassFromConstructor(clazz);
+            if (constructorInstance != null)
+                return constructorInstance;
         }
-        return clazz.cast(null);
+        if (thereAreFactoryConstructorsIn(clazz)) {
+            final Object factoryInstance = createClassFromFactory(clazz);
+            if (factoryInstance != null)
+                return factoryInstance;
+        }
+        return null;
     }
 
-    private Object createClassFromFactory(final Class<?> clazz) throws InvocationTargetException, IllegalAccessException {
+    private boolean thereAreConstructorsIn(final Class<?> clazz) {
+        return clazz.getConstructors().length > 0;
+    }
+
+    private Object createClassFromFactory(final Class<?> clazz) {
+        Method constructor = getAFactoryMethodIn(clazz);
+        final int numberOfParams = numberOfParamsFor(constructor);
+        try {
+            return constructor.invoke(clazz, new Object[numberOfParams]);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private int numberOfParamsFor(final Method constructor) {
+        return constructor.getParameterTypes().length;
+    }
+
+    private Method getAFactoryMethodIn(final Class<?> clazz) {
         Method constructor = null;
         for (Method method : clazz.getMethods()) {
             if (method.getReturnType() == clazz)
                 constructor = method;
         }
-        final int numberOfParams = constructor.getParameterTypes().length;
-        try {
-            return constructor.invoke(clazz, new Object[numberOfParams]);
-        } catch (Exception e) {
-        }
-        return null;
+        return constructor;
     }
 
-    private boolean hasAFactoryConstructor(final Class<?> clazz) {
+    private boolean thereAreFactoryConstructorsIn(final Class<?> clazz) {
         for (Method method : clazz.getMethods()) {
             if (method.getReturnType() == clazz)
                 return true;
@@ -136,21 +146,26 @@ public class FactoryInstanceMaker implements InstanceMaker {
         return false;
     }
 
-    private Object createClassFromConstructor(final Class<?> clazz) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+    private Object createClassFromConstructor(final Class<?> clazz) {
         final Constructor<?> constructor = clazz.getConstructors()[0];
         final int numberOfParams = constructor.getParameterTypes().length;
-        if (numberOfParams == 0) {
-            return constructor.newInstance();
+        try {
+            if (numberOfParams == 0) {
+                return constructor.newInstance();
+            }
+            final ArrayList<Object> params = createNullParamListFor(constructor);
+            return constructor.newInstance(params.toArray());
+        } catch (Exception e) {
+            return null;
         }
+    }
+
+    private ArrayList<Object> createNullParamListFor(final Constructor<?> constructor) {
         final ArrayList<Object> params = new ArrayList<>();
         for (Class param : constructor.getParameterTypes()) {
             addNullFor(param, params);
         }
-        try {
-            return constructor.newInstance(params.toArray());
-        } catch (Exception e) {
-        }
-        return null;
+        return params;
     }
 
     private Object primitive(final Class<?> parameter) {
@@ -178,11 +193,21 @@ public class FactoryInstanceMaker implements InstanceMaker {
         return Modifier.isFinal(parameter.getModifiers());
     }
 
-    private boolean[] getBooleanArrayFor(final int value, final int numberOfPlaces) {
+    private boolean[] getBooleanRepresentationFor(final int value, final int numberOfPlaces) {
+        String binary = getBinaryStringOfProperSize(value, numberOfPlaces);
+        final boolean[] booleans = convertToBooleans(binary);
+        return booleans;
+    }
+
+    private String getBinaryStringOfProperSize(final int value, final int numberOfPlaces) {
         String binary = Integer.toBinaryString(value);
         if (binary.length() < numberOfPlaces) {
             binary = padWithZeros(binary, numberOfPlaces);
         }
+        return binary;
+    }
+
+    private boolean[] convertToBooleans(final String binary) {
         final char[] binaryArray = binary.toCharArray();
         final boolean[] booleans = new boolean[binaryArray.length];
         for (int i = 0; i < binary.length(); i++)
