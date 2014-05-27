@@ -1,6 +1,6 @@
 package org.janvs.util;
 
-public class Booleans {
+public class BooleanMaker {
 
     public static boolean[] getBooleanRepresentationFor(final int value, final int numberOfPlaces) {
         String binary = getBinaryStringOfProperSize(value, numberOfPlaces);
@@ -9,9 +9,16 @@ public class Booleans {
     }
 
     static private String getBinaryStringOfProperSize(final int value, final int numberOfPlaces) {
-        String binary = Integer.toBinaryString(value);
+        final String binary = Integer.toBinaryString(value);
         if (binary.length() < numberOfPlaces) {
-            binary = padWithZeros(binary, numberOfPlaces);
+            return padWithZeros(binary, numberOfPlaces);
+        }
+        return binary;
+    }
+
+    static private String padWithZeros(String binary, final double numberOfPlaces) {
+        for (int i = 0; i < numberOfPlaces - binary.length(); i++) {
+            binary = "0" + binary;
         }
         return binary;
     }
@@ -22,12 +29,5 @@ public class Booleans {
         for (int i = 0; i < binary.length(); i++)
             booleans[i] = binaryArray[i] == '1' ? true : false;
         return booleans;
-    }
-
-    static private String padWithZeros(String binary, final double numberOfPlaces) {
-        for (int i = 0; i < numberOfPlaces - binary.length(); i++) {
-            binary = "0" + binary;
-        }
-        return binary;
     }
 }

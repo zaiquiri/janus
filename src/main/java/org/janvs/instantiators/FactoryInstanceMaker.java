@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.janvs.util.Combinator.getAllParameterCombinations;
+import static org.janvs.util.Combinator.getAllCombosOf;
 import static org.janvs.util.Reflection.getFactoryMethodsOf;
 
 public class FactoryInstanceMaker implements InstanceMaker {
@@ -23,7 +23,7 @@ public class FactoryInstanceMaker implements InstanceMaker {
     public List<Object> allInstancesFrom(final Method constructor) {
         final List<Object> instances = new ArrayList<>();
         constructor.setAccessible(true);
-        final Collection allParameterCombinations = getAllParameterCombinations(constructor);
+        final Collection allParameterCombinations = getAllCombosOf(constructor.getParameterTypes());
         for (Object params : allParameterCombinations) {
             instances.add(makeInstanceWith(constructor, (List) params));
         }

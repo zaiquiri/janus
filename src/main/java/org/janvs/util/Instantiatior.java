@@ -8,7 +8,7 @@ import static org.janvs.util.Reflection.*;
 import static org.janvs.util.Reflection.numberOfParamsFor;
 import static org.mockito.Mockito.mock;
 
-public class Instantiation {
+public class Instantiatior {
     public static Object nullFor(final Class<?> clazz) {
         if (clazz.isPrimitive()) {
             return primitive(clazz);
