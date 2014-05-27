@@ -21,14 +21,23 @@ public final class TestContainerReader {
         this.testContainer = testContainer;
     }
 
-    private String getBasePackageUnderTest() {
-        for (final Annotation annotation : testContainer.getAnnotations()) {
-            if (annotation.annotationType().equals(JanusOptions.class)) {
-                final JanusOptions options = (JanusOptions) annotation;
-                return options.basePackage();
+    public TestClassData getTestClassData() throws IllegalAccessException, InstantiationException {
+        final Field interfaceUnderTest = getInterfaceUnderTest();
+        final String basePackage = getBasePackageUnderTest();
+        final TestSuite testSuite = new TestSuite(getTestCases());
+
+        return new TestClassData(testContainer.newInstance(), testSuite, interfaceUnderTest, basePackage);
+
+    }
+
+    private List<TestCase> getTestCases() {
+        final ArrayList<TestCase> testCases = new ArrayList<TestCase>();
+        for (final Method method : testContainer.getDeclaredMethods()) {
+            if (isATestMethod(method)) {
+                testCases.add(new TestCase(method));
             }
         }
-        throw new RuntimeException("Base package not defined in @" + JanusOptions.class.getName() + " annotation");
+        return testCases;
     }
 
     private Field getInterfaceUnderTest() {
@@ -50,31 +59,21 @@ public final class TestContainerReader {
         throw new RuntimeException("No field designated as @" + UnderTest.class.getName());
     }
 
-    private List<TestCase> getTestCases() {
-        final ArrayList<TestCase> testCases = new ArrayList<TestCase>();
-        for (final Method method : testContainer.getDeclaredMethods()) {
-            if (isATestMethod(method)) {
-                testCases.add(new TestCase(method));
+    private String getBasePackageUnderTest() {
+        for (final Annotation annotation : testContainer.getAnnotations()) {
+            if (annotation.annotationType().equals(JanusOptions.class)) {
+                final JanusOptions options = (JanusOptions) annotation;
+                return options.basePackage();
             }
         }
-        return testCases;
+        throw new RuntimeException("Base package not defined in @" + JanusOptions.class.getName() + " annotation");
     }
 
-    private static boolean isUnderTest(final Field field) {
+    private boolean isUnderTest(final Field field) {
         return field.getAnnotation(UnderTest.class) != null;
     }
 
-    static private boolean isATestMethod(final Method method) {
+    private boolean isATestMethod(final Method method) {
         return method.getAnnotation(Test.class) != null && method.getAnnotation(Ignore.class) == null;
-    }
-
-    public TestClassData getTestClassData() throws IllegalAccessException, InstantiationException {
-        final List<TestCase> testCases = getTestCases();
-        final Field interfaceUnderTest = getInterfaceUnderTest();
-        final String basePackage = getBasePackageUnderTest();
-        final TestSuite testSuite = new TestSuite(testCases);
-
-        return new TestClassData(testContainer.newInstance(), testSuite, interfaceUnderTest, basePackage);
-
     }
 }
