@@ -1,4 +1,4 @@
-package org.janvs.instantiators;
+package org.janvs.instancemakers;
 
 import org.junit.Test;
 

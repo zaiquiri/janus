@@ -1,4 +1,4 @@
-package org.janvs.instantiators;
+package org.janvs.instancemakers;
 
 import java.util.ArrayList;
 import java.util.Collection;

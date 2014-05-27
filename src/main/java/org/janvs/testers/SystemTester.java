@@ -1,7 +1,7 @@
 package org.janvs.testers;
 
 import org.janvs.factories.ImplementationTesterFactory;
-import org.janvs.instantiators.InstanceMaker;
+import org.janvs.instancemakers.InstanceMaker;
 
 import java.util.Collection;
 

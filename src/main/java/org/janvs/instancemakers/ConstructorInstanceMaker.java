@@ -1,4 +1,4 @@
-package org.janvs.instantiators;
+package org.janvs.instancemakers;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
