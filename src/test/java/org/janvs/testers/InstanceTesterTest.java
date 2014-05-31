@@ -5,17 +5,13 @@ import org.janvs.specs.TestCase;
 import org.janvs.specs.TestSuite;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InstanceTesterTest {
@@ -37,7 +33,7 @@ public class InstanceTesterTest {
         testCases.add(testCaseOne);
         final TestSuite testSuite = new TestSuite(testCases);
 
-        final Tester tester  = mock(Tester.class);
+        final Tester tester = mock(Tester.class);
         when(aspectTesterFactory.createFor(testCaseOne)).thenReturn(tester);
 
         new InstanceTester(testSuite, aspectTesterFactory).run();
@@ -55,11 +51,11 @@ public class InstanceTesterTest {
         testCases.add(testCaseOne);
         testCases.add(testCaseTwo);
         testCases.add(testCaseThree);
-        final Tester testerOne  = mock(Tester.class);
+        final Tester testerOne = mock(Tester.class);
         when(aspectTesterFactory.createFor(testCaseOne)).thenReturn(testerOne);
-        final Tester testerTwo  = mock(Tester.class);
+        final Tester testerTwo = mock(Tester.class);
         when(aspectTesterFactory.createFor(testCaseTwo)).thenReturn(testerTwo);
-        final Tester testerThree  = mock(Tester.class);
+        final Tester testerThree = mock(Tester.class);
         when(aspectTesterFactory.createFor(testCaseThree)).thenReturn(testerThree);
 
         new InstanceTester(new TestSuite(testCases), aspectTesterFactory).run();
