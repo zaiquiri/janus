@@ -24,11 +24,11 @@ public class AspectTester implements Tester {
             if (testShouldThrowException()) {
                 testFailedWithMissingException();
             } else {
-                testSucceeded();
+                testFinished();
             }
         } catch (final InvocationTargetException exception) {
             if (testExpected(exception)) {
-                testSucceeded();
+                testFinished();
             } else {
                 testFailedWith(exception);
             }
@@ -57,8 +57,8 @@ public class AspectTester implements Tester {
         testNotifier.testFailed(exception);
     }
 
-    private void testSucceeded() {
-        testNotifier.testSucceeded();
+    private void testFinished() {
+        testNotifier.testFinished();
     }
 
     private void runTest() throws IllegalAccessException,

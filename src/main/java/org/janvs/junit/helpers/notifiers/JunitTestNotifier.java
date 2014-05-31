@@ -24,7 +24,7 @@ public class JunitTestNotifier implements TestNotifier {
     }
 
     @Override
-    public void testSucceeded() {
+    public void testFinished() {
         notifier.fireTestFinished(description);
     }
 }

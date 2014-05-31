@@ -24,7 +24,6 @@ public class BubbleOne implements Bubblable {
     @Override
     public String bubblify(String bubble) {
         if (bubble.contains("@")) throw new IllegalArgumentException();
-        if (bubble == null) throw new NullPointerException();
         return "bubble" + bubble + "bubble";
     }
 

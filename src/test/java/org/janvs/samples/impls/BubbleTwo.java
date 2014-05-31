@@ -27,7 +27,6 @@ public class BubbleTwo implements Bubblable {
 	@Override
 	public String bubblify(String bubble) {
 		if (bubble.contains("@")) throw new IllegalArgumentException();
-        if (bubble == null) throw new NullPointerException();
 		String bubblified = "";
 		char[] bubbles = "bubble".toCharArray();
 		int i = 0;

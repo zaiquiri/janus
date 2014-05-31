@@ -42,7 +42,7 @@ public class JunitTestNotifierTest {
     public void shouldFireTestFinishedWhenTestSucceededCalled() {
         final JunitTestNotifier junitTestNotifier = new JunitTestNotifier(notifier, description);
 
-        junitTestNotifier.testSucceeded();
+        junitTestNotifier.testFinished();
 
         verify(notifier).fireTestFinished(description);
     }
