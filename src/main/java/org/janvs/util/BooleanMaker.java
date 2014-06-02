@@ -17,7 +17,8 @@ public class BooleanMaker {
     }
 
     static private String padWithZeros(String binary, final double numberOfPlaces) {
-        for (int i = 0; i < numberOfPlaces - binary.length(); i++) {
+        final double numberOfZerosToAdd = numberOfPlaces - binary.length();
+        for (int i = 0; i < numberOfZerosToAdd; i++) {
             binary = "0" + binary;
         }
         return binary;
