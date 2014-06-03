@@ -11,7 +11,7 @@ import static org.mockito.Mockito.mock;
 public class Instantiatior {
     public static Object nullFor(final Class<?> clazz) {
         if (clazz.isPrimitive()) {
-            return primitive(clazz);
+            return primitiveMin(clazz);
         } else {
             return null;
         }
@@ -19,7 +19,7 @@ public class Instantiatior {
 
     public static Object mockFor(final Class<?> clazz) {
         if (clazz.isPrimitive()) {
-            return primitive(clazz);
+            return primitiveMax(clazz);
         } else if (isFinalClass(clazz)) {
             return mockForFinalClass(clazz);
         } else {
@@ -59,7 +59,8 @@ public class Instantiatior {
                 return constructor.newInstance();
             }
             final ArrayList<Object> params = createNullParamListFor(constructor);
-            return constructor.newInstance(params.toArray());
+            final Object[] paramArray = params.toArray();
+            return constructor.newInstance(paramArray);
         } catch (Exception e) {
             return null;
         }
@@ -68,28 +69,49 @@ public class Instantiatior {
     private static ArrayList<Object> createNullParamListFor(final Constructor<?> constructor) {
         final ArrayList<Object> params = new ArrayList<>();
         for (Class param : constructor.getParameterTypes()) {
-            nullFor(param);
+            params.add(nullFor(param));
         }
         return params;
     }
 
-    private static Object primitive(final Class<?> parameter) {
+    private static Object primitiveMax(final Class<?> parameter) {
         if (byte.class == parameter) {
-            return Byte.valueOf((byte) 0);
+            return Byte.MAX_VALUE;
         } else if (short.class == parameter) {
-            return Short.valueOf((short) 0);
+            return Short.MAX_VALUE;
         } else if (int.class == parameter) {
-            return Integer.valueOf(0);
+            return Integer.MAX_VALUE;
         } else if (long.class == parameter) {
-            return Long.valueOf(0);
+            return Long.MAX_VALUE;
         } else if (float.class == parameter) {
-            return Float.valueOf(0);
+            return Float.MAX_VALUE;
         } else if (double.class == parameter) {
-            return Double.valueOf(0);
+            return Double.MAX_VALUE;
+        } else if (boolean.class == parameter) {
+            return Boolean.valueOf(true);
+        } else if (char.class == parameter) {
+            return Character.MAX_VALUE;
+        }
+        return null;
+    }
+
+    private static Object primitiveMin(final Class<?> parameter) {
+        if (byte.class == parameter) {
+            return Byte.MIN_VALUE;
+        } else if (short.class == parameter) {
+            return Short.MIN_VALUE;
+        } else if (int.class == parameter) {
+            return Integer.MIN_VALUE;
+        } else if (long.class == parameter) {
+            return Long.MIN_VALUE;
+        } else if (float.class == parameter) {
+            return Float.MIN_VALUE;
+        } else if (double.class == parameter) {
+            return Double.MIN_VALUE;
         } else if (boolean.class == parameter) {
             return Boolean.valueOf(false);
         } else if (char.class == parameter) {
-            return Character.valueOf((char) 0);
+            return Character.MIN_VALUE;
         }
         return null;
     }

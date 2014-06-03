@@ -18,10 +18,11 @@ public class Combinator {
         final int numberOfParams = parameters.length;
         final int numberOfCombos = (int) Math.pow(2, numberOfParams);
 
-        for (int comboNumber = 0; comboNumber < numberOfCombos; comboNumber++) {
-            boolean[] booleans = getBooleanRepresentationFor(comboNumber, numberOfParams);
+        for (int combo = 0; combo < numberOfCombos; combo++) {
+            boolean[] booleans = getBooleanRepresentationFor(combo, numberOfParams);
             allCombos.add(makeCombo(parameters, booleans));
         }
+
         return allCombos;
     }
 
